@@ -1,16 +1,9 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
-from skimage.feature import hog
-from skimage import data, exposure
-from skimage.color import rgb2gray
-from skimage.io import imread
-from skimage.transform import resize
 from sklearn.preprocessing import normalize
 from sklearn.metrics import pairwise_distances
 from PWPro import DataManager
 
-from keras.preprocessing import image
 
 def k_neighbours(q, X, metric="euclidean", k=10):
     # Check pairwise_distances function docs: http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html#sklearn.metrics.pairwise_distances

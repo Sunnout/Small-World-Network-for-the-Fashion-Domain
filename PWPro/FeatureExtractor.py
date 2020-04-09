@@ -2,15 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from skimage.feature import hog
-from skimage import data, exposure
-from skimage.color import rgb2gray
-from skimage.io import imread
-from skimage.transform import resize
-from sklearn.preprocessing import normalize
-from sklearn.metrics import pairwise_distances
-from PWPro import DataManager
+from skimage import exposure
 
-from keras.preprocessing import image
 
 # Straight forward HoC implementation on RGB space
 # For a more complete implementation, with better parametrization, etc., you can check the OpenCV library.
@@ -30,11 +23,21 @@ def hoc(im, bins=(16, 16, 16), hist_range=(256, 256, 256)):
     ind = im_blue_levels * bins[0] * bins[1] + im_green_levels * bins[0] + im_red_levels
 
     hist_r, bins_r = np.histogram(ind.flatten(), bins[0] * bins[1] * bins[2])
+    
+    fig = plt.figure(figsize=(10,6))
+    ax = fig.add_subplot(111)
+    ax.bar(bins_r[:-1], hist_r ,width=1)
+    ax.set_xticks([])
+    ax.set_xlim(bins_r[:-1].min()*-2, max(bins_r.max(), hist_r.shape[0]*1.3))
+    ax.set_ylim(0, 2000)
+    plt.show()
 
     return hist_r, bins_r
 
 
-def hog(img, orientations=8, pixels_per_cell=(16, 16) ):
+def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
+    #convert gray scale??
+    
     fd, hog_image = hog(img, orientations=orientations, pixels_per_cell=pixels_per_cell, visualize=True)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6), sharex=True, sharey=True)
 
