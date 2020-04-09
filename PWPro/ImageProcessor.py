@@ -1,7 +1,7 @@
 from skimage.transform import resize
 
-from PWPro import DataManager as dm
-from PWPro import FeatureExtractor as fe
+import DataManager as dm
+import FeatureExtractor as fe
 
 
 class ImageProcessor:
@@ -29,7 +29,8 @@ class ImageProcessor:
     """Função para processar imagem de input
     Busca às features das imagens da bd se a imagem pertencer à bd
     Senão calcula as features para a imagem nova"""
-    
+
+    @staticmethod
     def center_crop_image(im, size=224):
 
         if im.shape[2] == 4:  # Remove the alpha channel

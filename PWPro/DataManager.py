@@ -5,11 +5,11 @@ from skimage.io import imread
 
 
 def get_img_names():
-    path = os.getcwd()+"/../Data"
-    os.chdir(path)
-    img_list = os.listdir()
-    print(img_list)
+    img_list = []
+    for entry in os.scandir("../Data"):
+        img_list.append(entry.name);
 
+    img_list.sort()
     return img_list
 
 
@@ -20,7 +20,4 @@ def get_img(img_name):
 def get_rand_image():
     img_list = get_img_names()
     img_name = random.choice(img_list)
-    return imread(img_name)
-
-
-
+    return imread("../Data/"+img_name)
