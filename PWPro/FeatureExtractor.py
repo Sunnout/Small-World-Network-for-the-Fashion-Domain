@@ -7,7 +7,7 @@ from skimage import exposure
 
 # Straight forward HoC implementation on RGB space
 # For a more complete implementation, with better parametrization, etc., you can check the OpenCV library.
-def hoc(im, bins=(16, 16, 16), hist_range=(256, 256, 256)):
+def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
     im_r = im[:, :, 0]
     im_g = im[:, :, 1]
     im_b = im[:, :, 2]

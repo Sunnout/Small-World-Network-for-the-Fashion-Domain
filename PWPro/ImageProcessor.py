@@ -3,8 +3,8 @@ import os
 from skimage import img_as_ubyte
 from skimage.transform import resize
 import numpy as np
-import DataManager as dm
-import FeatureExtractor as fe
+from PWPro import DataManager as dm
+from PWPro import FeatureExtractor as fe
 
 
 class ImageProcessor:
