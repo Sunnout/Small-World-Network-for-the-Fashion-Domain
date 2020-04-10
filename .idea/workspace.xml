@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5fd705a8-e42b-424f-a351-a89a14b0ae1d" name="Default Changelist" comment="Fix DataManager.get_img&#10;Add return statement to FeatureExtractor.my_hog&#10;ImageProcessor now checks if there's any matrix files before calculating the features for the database">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/PW_Project.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/DataManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/DataManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" afterDir="false" />
+    <list default="true" id="5fd705a8-e42b-424f-a351-a89a14b0ae1d" name="Default Changelist" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/PW_Project.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb&#10;#&#9;PWPro/ImageProcessor.py&#10;#&#9;PWPro/Test.ipynb">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/emarodriguesvieira.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PWPro/.ipynb_checkpoints/SimilarityCalculator-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PW_Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PW_Project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/ImageProcessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/ImageProcessor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/Test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/Test.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/hoc_matrix.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/hog_matrix.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +40,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/PWPro" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -92,7 +90,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586528023015</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fix DataManager.get_img&#10;Add return statement to FeatureExtractor.my_hog&#10;ImageProcessor now checks if there's any matrix files before calculating the features for the database">
+      <created>1586528896899</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1586528896899</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -119,7 +124,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adds image retrieval methods&#10;Change 'Database' folder to 'Data'&#10;Adds k_neighbours method to the SimilarityCalc file&#10;Completes a bit more of the calc_sim_matrix method" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds image retrieval methods&#10;Change 'Database' folder to 'Data'&#10;Adds k_neighbours method to the SimilarityCalc file&#10;Completes a bit more of the calc_sim_matrix method" />
+    <MESSAGE value="Fix DataManager.get_img&#10;Add return statement to FeatureExtractor.my_hog&#10;ImageProcessor now checks if there's any matrix files before calculating the features for the database" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/PW_Project.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb&#10;#&#9;PWPro/ImageProcessor.py&#10;#&#9;PWPro/Test.ipynb" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/PW_Project.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb&#10;#&#9;PWPro/ImageProcessor.py&#10;#&#9;PWPro/Test.ipynb" />
   </component>
   <component name="WindowStateProjectService">
     <state x="847" y="396" key="#Notifications" timestamp="1586528105674">
@@ -130,22 +137,30 @@
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="414" y="214" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.40.1920.1040@0.40.1920.1040" timestamp="1586528366943" />
-    <state x="587" y="40" key="CommitChangelistDialog2" timestamp="1586528762251">
+    <state x="587" y="40" key="CommitChangelistDialog2" timestamp="1586529759845">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="587" y="40" key="CommitChangelistDialog2/0.40.1920.1040@0.40.1920.1040" timestamp="1586528762251" />
-    <state x="740" y="314" key="FileChooserDialogImpl" timestamp="1586528363655">
+    <state x="587" y="40" key="CommitChangelistDialog2/0.40.1920.1040@0.40.1920.1040" timestamp="1586529759845" />
+    <state x="740" y="314" key="FileChooserDialogImpl" timestamp="1586529448800">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="740" y="314" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1586528363655" />
-    <state x="461" y="204" key="SettingsEditor" timestamp="1586525622466">
+    <state x="740" y="314" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1586529448800" />
+    <state x="171" y="175" key="MergeDialog" timestamp="1586530004542">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="461" y="204" key="SettingsEditor/0.40.1920.1040@0.40.1920.1040" timestamp="1586525622466" />
-    <state x="552" y="288" key="Vcs.Push.Dialog.v2" timestamp="1586528040499">
+    <state x="171" y="175" key="MergeDialog/0.40.1920.1040@0.40.1920.1040" timestamp="1586530004542" />
+    <state x="723" y="357" width="661" height="419" key="MultipleFileMergeDialog" timestamp="1586530008076">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="552" y="288" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1586528040499" />
+    <state x="723" y="357" width="661" height="419" key="MultipleFileMergeDialog/0.40.1920.1040@0.40.1920.1040" timestamp="1586530008076" />
+    <state x="461" y="204" key="SettingsEditor" timestamp="1586529469041">
+      <screen x="0" y="40" width="1920" height="1040" />
+    </state>
+    <state x="461" y="204" key="SettingsEditor/0.40.1920.1040@0.40.1920.1040" timestamp="1586529469041" />
+    <state x="552" y="288" key="Vcs.Push.Dialog.v2" timestamp="1586528901326">
+      <screen x="0" y="40" width="1920" height="1040" />
+    </state>
+    <state x="552" y="288" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1586528901326" />
     <state x="92" y="132" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1586528170760">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>

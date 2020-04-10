@@ -2,7 +2,9 @@ import numpy as np
 
 from sklearn.preprocessing import normalize
 from sklearn.metrics import pairwise_distances
-import DataManager as dm
+
+# WARNING: Este import dá erro no Notebook e tem de se tirar o from PWPro
+from PWPro import DataManager as dm
 
 
 def k_neighbours(q, X, metric="euclidean", k=10):
