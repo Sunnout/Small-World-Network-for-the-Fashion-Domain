@@ -29,7 +29,7 @@ def hoc(im, bins=(16, 16, 16), hist_range=(256, 256, 256)):
     ax.bar(bins_r[:-1], hist_r ,width=1)
     ax.set_xticks([])
     ax.set_xlim(bins_r[:-1].min()*-2, max(bins_r.max(), hist_r.shape[0]*1.3))
-    ax.set_ylim(0, 2000)
+    #ax.set_ylim(0, 2000)
     plt.show()
 
     return hist_r, bins_r
@@ -52,3 +52,5 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
     ax2.set_title('Histogram of Oriented Gradients', fontsize=18)
     plt.show()
+
+    return fd

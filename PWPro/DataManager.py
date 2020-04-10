@@ -14,7 +14,7 @@ def get_img_names():
 
 
 def get_img(img_name):
-    return imread(img_name)
+    return imread("../Data/"+img_name)
 
 
 def get_rand_image():

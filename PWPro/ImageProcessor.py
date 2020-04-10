@@ -1,5 +1,8 @@
-from skimage.transform import resize
+import os
 
+from skimage import img_as_ubyte
+from skimage.transform import resize
+import numpy as np
 import DataManager as dm
 import FeatureExtractor as fe
 
@@ -7,28 +10,39 @@ import FeatureExtractor as fe
 class ImageProcessor:
 
     def __init__(self):
-        
-        #Guardar info em ficheiro e adicionar flags para buscar ou escrever
+
+        # Guardar info em ficheiro e adicionar flags para buscar ou escrever
         self.colors = []
         self.grads = []
 
         self.db_imgs = dm.get_img_names()
 
-        for img_name in self.db_imgs:
-            img = dm.get_img(img_name)
+        if os.path.isfile('hog_matrix.txt') & os.path.isfile('hoc_matrix.txt'):
+            self.colors = np.loadtxt('hoc_matrix.txt', dtype=int)
+            self.grads = np.loadtxt('hog_matrix.txt', dtype=float)
+        else:
+            for img_name in self.db_imgs:
+                img = dm.get_img(img_name)
 
-            img = self.center_crop_image(img, size=224)
+                img = self.center_crop_image(img, size=224)
 
-            #Extract features
-            color_hist, bins = fe.hoc(img)
-            grad_hist = fe.my_hog(img) #gray scale?
-            
-            self.colors.append(color_hist)
-            self.grads.append(grad_hist)
-            
-    """Função para processar imagem de input
+                # Extract features
+                grad_hist = fe.my_hog(img)  # gray scale?
+                img_int = img_as_ubyte(img)
+                color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
+
+                print(color_hist)
+                self.colors.append(color_hist)
+                self.grads.append(grad_hist)
+
+            np.savetxt("hoc_matrix.txt", self.colors, fmt='%d')
+            np.savetxt("hog_matrix.txt", self.grads, fmt='%.18f')
+
+    """
+    Função para processar imagem de input
     Busca às features das imagens da bd se a imagem pertencer à bd
-    Senão calcula as features para a imagem nova"""
+    Senão calcula as features para a imagem nova
+    """
 
     @staticmethod
     def center_crop_image(im, size=224):
