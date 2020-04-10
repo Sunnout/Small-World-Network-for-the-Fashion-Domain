@@ -18,6 +18,8 @@ class ImageProcessor:
         self.db_imgs = dm.get_img_names()
 
         if os.path.isfile('hog_matrix.txt') & os.path.isfile('hoc_matrix.txt'):
+            # TODO: Check if the database is the same(eg, see if an image was added and calculate features only for
+            #  that image)
             self.colors = np.loadtxt('hoc_matrix.txt', dtype=int)
             self.grads = np.loadtxt('hog_matrix.txt', dtype=float)
         else:
