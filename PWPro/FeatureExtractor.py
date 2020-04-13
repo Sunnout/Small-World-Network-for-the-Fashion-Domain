@@ -23,14 +23,6 @@ def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
     ind = im_blue_levels * bins[0] * bins[1] + im_green_levels * bins[0] + im_red_levels
 
     hist_r, bins_r = np.histogram(ind.flatten(), bins[0] * bins[1] * bins[2])
-    
-    fig = plt.figure(figsize=(10,6))
-    ax = fig.add_subplot(111)
-    ax.bar(bins_r[:-1], hist_r ,width=1)
-    ax.set_xticks([])
-    ax.set_xlim(bins_r[:-1].min()*-2, max(bins_r.max(), hist_r.shape[0]*1.3))
-    #ax.set_ylim(0, 2000)
-    plt.show()
 
     return hist_r, bins_r
 
@@ -39,6 +31,23 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
     #convert gray scale??
     
     fd, hog_image = hog(img, orientations=orientations, pixels_per_cell=pixels_per_cell, visualize=True)
+    
+    return fd, hog_image
+
+
+def plot_hoc(hist_r, bins_r):
+    
+    fig = plt.figure(figsize=(10,6))
+    ax = fig.add_subplot(111)
+    ax.bar(bins_r[:-1], hist_r ,width=1)
+    ax.set_xticks([])
+    ax.set_xlim(bins_r[:-1].min()*-2, max(bins_r.max(), hist_r.shape[0]*1.3))
+    #ax.set_ylim(0, 2000)
+    plt.show()
+    
+    
+def plot_hog(fd, hog_image, img):
+    
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6), sharex=True, sharey=True)
 
     ax1.axis('off')
@@ -52,5 +61,6 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
     ax2.set_title('Histogram of Oriented Gradients', fontsize=18)
     plt.show()
-
-    return fd
+    
+    
+    
