@@ -20,14 +20,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5fd705a8-e42b-424f-a351-a89a14b0ae1d" name="Default Changelist" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/PW_Project.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb&#10;#&#9;PWPro/ImageProcessor.py&#10;#&#9;PWPro/Test.ipynb">
-      <change afterPath="$PROJECT_DIR$/PWPro/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PW_Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PW_Project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/DataManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/DataManager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/ImageProcessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/ImageProcessor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/Test.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PWPro/hoc_matrix.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PWPro/hog_matrix.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,16 +56,82 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/PWPro" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/PWPro" />
       <recent name="C:\Users\Diogo\repos\PW_Project" />
       <recent name="C:\Users\Diogo\repos\PW_Project\PWPro" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.ImageProcessor">
+    <configuration name="DataManager" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PW_Project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Diogo\anaconda3\envs\wsenv\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PWPro" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PWPro/DataManager.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ImageProcessor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PW_Project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Diogo\anaconda3\envs\wsenv\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PWPro" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PWPro/ImageProcessor.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="SmallWorldGraph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PW_Project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Diogo\anaconda3\envs\wsenv\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PWPro" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PWPro/SmallWorldGraph.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="PW_Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -86,6 +153,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.ImageProcessor" />
+        <item itemvalue="Python.DataManager" />
+        <item itemvalue="Python.SmallWorldGraph" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -144,12 +218,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adds image retrieval methods&#10;Change 'Database' folder to 'Data'&#10;Adds k_neighbours method to the SimilarityCalc file&#10;Completes a bit more of the calc_sim_matrix method" />
@@ -174,6 +249,22 @@
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="740" y="314" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1586530249616" />
+    <state width="1259" height="163" key="GridCell.Tab.0.bottom" timestamp="1587567734443">
+      <screen x="0" y="23" width="1280" height="734" />
+    </state>
+    <state width="1259" height="163" key="GridCell.Tab.0.bottom/0.23.1280.734@0.23.1280.734" timestamp="1587567734443" />
+    <state width="1259" height="163" key="GridCell.Tab.0.center" timestamp="1587567734442">
+      <screen x="0" y="23" width="1280" height="734" />
+    </state>
+    <state width="1259" height="163" key="GridCell.Tab.0.center/0.23.1280.734@0.23.1280.734" timestamp="1587567734442" />
+    <state width="1259" height="163" key="GridCell.Tab.0.left" timestamp="1587567734441">
+      <screen x="0" y="23" width="1280" height="734" />
+    </state>
+    <state width="1259" height="163" key="GridCell.Tab.0.left/0.23.1280.734@0.23.1280.734" timestamp="1587567734441" />
+    <state width="1259" height="163" key="GridCell.Tab.0.right" timestamp="1587567734442">
+      <screen x="0" y="23" width="1280" height="734" />
+    </state>
+    <state width="1259" height="163" key="GridCell.Tab.0.right/0.23.1280.734@0.23.1280.734" timestamp="1587567734442" />
     <state x="171" y="175" key="MergeDialog" timestamp="1586530004542">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
@@ -182,9 +273,10 @@
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="723" y="357" width="661" height="419" key="MultipleFileMergeDialog/0.40.1920.1040@0.40.1920.1040" timestamp="1586530008076" />
-    <state x="461" y="204" key="SettingsEditor" timestamp="1586530341016">
-      <screen x="0" y="40" width="1920" height="1040" />
+    <state x="298" y="35" key="SettingsEditor" timestamp="1587560865431">
+      <screen x="0" y="23" width="1280" height="734" />
     </state>
+    <state x="298" y="35" key="SettingsEditor/0.23.1280.734@0.23.1280.734" timestamp="1587560865431" />
     <state x="461" y="204" key="SettingsEditor/0.40.1920.1040@0.40.1920.1040" timestamp="1586530341016" />
     <state x="552" y="288" key="Vcs.Push.Dialog.v2" timestamp="1586530106881">
       <screen x="0" y="40" width="1920" height="1040" />

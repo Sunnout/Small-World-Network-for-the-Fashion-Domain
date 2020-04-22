@@ -3,49 +3,48 @@ import os
 from skimage import img_as_ubyte
 from skimage.transform import resize
 import numpy as np
-from PWPro import DataManager as dm
-from PWPro import FeatureExtractor as fe
+from DataManager import DataManager as dm
+import FeatureExtractor as fe
 
 
 class ImageProcessor:
 
-    def __init__(self):
+    def __init__(self, update=False):
 
-        # Guardar info em ficheiro e adicionar flags para buscar ou escrever
-        self.colors = []
-        self.grads = []
+        self.image_names = np.load("image_names.npz")["names"]
 
-        self.db_imgs = dm.get_img_names()
+        # Only updates the feature matrices if we call ImageProcessor(update=True)
+        if update:
+            self.colors = []
+            self.grads = []
 
-        if os.path.isfile('hog_matrix.txt') & os.path.isfile('hoc_matrix.txt'):
-            # TODO: Check if the database is the same(eg, see if an image was added and calculate features only for
-            #  that image)
-            self.colors = np.loadtxt('hoc_matrix.txt', dtype=int)
-            self.grads = np.loadtxt('hog_matrix.txt', dtype=float)
-        else:
-            for img_name in self.db_imgs:
-                img = dm.get_img(img_name)
+            for img_name in self.image_names:
+                img = dm.get_single_img(img_name)
 
+                # Pre-processing Image
                 img = self.center_crop_image(img, size=224)
 
-                # Extract features
+                # Extract HoG
                 grad_hist = fe.my_hog(img)  # gray scale?
+                self.grads.append(grad_hist)
+                np.savez('{}.npz'.format("hog_matrix"), hoc=self.grads)
+
+                # Extract HoC
                 img_int = img_as_ubyte(img)
                 color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
-
-                print(color_hist)
                 self.colors.append(color_hist)
-                self.grads.append(grad_hist)
+                np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
+        else:
+            self.colors = np.load("hoc_matrix.npz")["hoc"]
+            self.grads = np.load("hog_matrix.npz")["hog"]
 
-            np.savetxt("hoc_matrix.txt", self.colors, fmt='%d')
-            np.savetxt("hog_matrix.txt", self.grads, fmt='%.18f')
-
+    #Acho que não vamos precisar disto
     def process_single_img(self, img_name, img):
         """Função para processar imagem de input
         Busca às features das imagens da bd se a imagem pertencer à bd
         Senão calcula as features para a imagem nova"""
 
-        if img_name in self.db_imgs:
+        if img_name in self.image_names:
             # Get features from DB
             img_color = self.colors.index(img_name)
             img_grad = self.grads.index(img_name)

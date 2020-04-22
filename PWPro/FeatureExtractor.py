@@ -61,6 +61,3 @@ def plot_hog(fd, hog_image, img):
     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
     ax2.set_title('Histogram of Oriented Gradients', fontsize=18)
     plt.show()
-    
-    
-    

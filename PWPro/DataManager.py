@@ -1,23 +1,42 @@
 import os
 import random
-
+import numpy as np
 from skimage.io import imread
 
-
-def get_img_names():
-    img_list = []
-    for entry in os.scandir("./Data"):
-        img_list.append(entry.name)
-
-    img_list.sort()
-    return img_list
+DIR = "../Data/"
 
 
-def get_img(img_name):
-    return imread("./Data/" + img_name)
+class DataManager:
 
+    def __init__(self, update=False):
 
-def get_rand_image():
-    img_list = get_img_names()
-    img_name = random.choice(img_list)
-    return imread("./Data/"+img_name)
+        # Only updates image names if we call DataManager(update=True)
+        if update:
+            self.image_names = self.get_img_names()
+            np.savez('{}.npz'.format("image_names"), names=self.image_names)
+        else:
+            self.image_names = np.load("image_names.npz")["names"]
+
+    def get_all_imgs(self):
+        img_list = []
+        for name in self.image_names:
+            img_list.append(imread(DIR + name))
+
+        return img_list
+
+    def get_rand_image(self):
+        img_list = self.get_all_imgs()
+        return random.choice(img_list)
+
+    @staticmethod
+    def get_img_names():
+        name_list = []
+        for entry in os.scandir(DIR):
+            name_list.append(entry.name)
+
+        name_list.sort()
+        return name_list
+
+    @staticmethod
+    def get_single_img(img_name):
+        return imread(DIR + img_name)

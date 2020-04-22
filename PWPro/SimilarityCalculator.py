@@ -2,7 +2,7 @@ import numpy as np
 
 from sklearn.preprocessing import normalize
 from sklearn.metrics import pairwise_distances
-from PWPro import DataManager as dm
+from DataManager import DataManager as dm
 
 
 def k_neighbours(q, X, metric="euclidean", k=10):
