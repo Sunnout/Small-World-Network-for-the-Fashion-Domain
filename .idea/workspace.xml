@@ -20,15 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5fd705a8-e42b-424f-a351-a89a14b0ae1d" name="Default Changelist" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/PW_Project.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;PWPro/.ipynb_checkpoints/Test-checkpoint.ipynb&#10;#&#9;PWPro/ImageProcessor.py&#10;#&#9;PWPro/Test.ipynb">
-      <change beforePath="$PROJECT_DIR$/.idea/PW_Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PW_Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/DataManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/DataManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/FeatureExtractor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/ImageProcessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/ImageProcessor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/SimilarityCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/hoc_matrix.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PWPro/hog_matrix.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PWPro/SmallWorldGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/PWPro/SmallWorldGraph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

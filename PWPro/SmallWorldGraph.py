@@ -1,11 +1,17 @@
 import networkx as nx
+import numpy as np
 
 from DataManager import DataManager as dm
 
 class SmallWorldGraph:
 
     def __init__(self):
-        """Ainda não faz nada"""
+
+        # Fecthes similarity matrices
+        self.hoc_feat = np.load("hoc_matrix.npz")["hoc"]
+        self.hog_feat = np.load("hog_matrix.npz")["hog"]
+
+        # TODO: Ainda não faz nada!!
         graph = nx.Graph()
 
         key = 0
