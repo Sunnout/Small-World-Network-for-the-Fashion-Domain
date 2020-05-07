@@ -32,7 +32,7 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
     
     fd, hog_image = hog(img, orientations=orientations, pixels_per_cell=pixels_per_cell, visualize=True)
     
-    return fd, hog_image
+    return fd
 
 
 def plot_hoc(hist_r, bins_r):

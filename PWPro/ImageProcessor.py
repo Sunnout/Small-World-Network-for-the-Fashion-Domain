@@ -3,6 +3,8 @@ import os
 from skimage import img_as_ubyte
 from skimage.transform import resize
 import numpy as np
+from skimage import color
+from sklearn.preprocessing import normalize
 from DataManager import DataManager as dm
 import FeatureExtractor as fe
 
@@ -21,38 +23,31 @@ class ImageProcessor:
             for img_name in self.image_names:
                 img = dm.get_single_img(img_name)
 
-                # Pre-processing Image
+                # Extract HoC
                 img = self.center_crop_image(img, size=224)
+                img_hsv = color.rgb2hsv(img)
+                img_int = img_as_ubyte(img_hsv)
+                color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
+                color_feat = np.squeeze(normalize(color_hist.reshape(1, -1), norm="l2"))
+                self.colors.append(color_feat)
 
                 # Extract HoG
                 grad_hist = fe.my_hog(img)  # gray scale?
                 self.grads.append(grad_hist)
-                np.savez('{}.npz'.format("hog_matrix"), hoc=self.grads)
 
-                # Extract HoC
-                img_int = img_as_ubyte(img)
-                color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
-                self.colors.append(color_hist)
-                np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
+                img_gray = color.rgb2gray(img)
+                grad_hist = fe.my_hog(img_gray)
+                grad_feat = np.squeeze(normalize(grad_hist.reshape(1, -1), norm="l2"))
+                self.grads.append(grad_feat)
+
+            self.colors = np.array(self.colors)
+            np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
+            self.grads = np.array(self.grads)
+            np.savez('{}.npz'.format("hog_matrix"), hoc=self.grads)
+
         else:
             self.colors = np.load("hoc_matrix.npz")["hoc"]
             self.grads = np.load("hog_matrix.npz")["hog"]
-
-    #Acho que não vamos precisar disto
-    def process_single_img(self, img_name, img):
-        """Função para processar imagem de input
-        Busca às features das imagens da bd se a imagem pertencer à bd
-        Senão calcula as features para a imagem nova"""
-
-        if img_name in self.image_names:
-            # Get features from DB
-            img_color = self.colors.index(img_name)
-            img_grad = self.grads.index(img_name)
-        else:
-            # Extract features
-            img = self.center_crop_image(img, size=224)
-            img_color, bins = fe.hoc(img)
-            img_grad = fe.my_hog(img)  # gray scale?
 
     @staticmethod
     def center_crop_image(im, size=224):

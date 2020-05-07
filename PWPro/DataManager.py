@@ -28,6 +28,9 @@ class DataManager:
         img_list = self.get_all_imgs()
         return random.choice(img_list)
 
+    def get_num_imgs(self):
+        return len(self.image_names)
+
     @staticmethod
     def get_img_names():
         name_list = []
@@ -40,3 +43,4 @@ class DataManager:
     @staticmethod
     def get_single_img(img_name):
         return imread(DIR + img_name)
+
