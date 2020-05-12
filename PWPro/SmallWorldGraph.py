@@ -7,7 +7,7 @@ class SmallWorldGraph:
 
     def __init__(self):
 
-        # Fecthes similarity matrices
+        # Fetches similarity matrices
         self.hoc_feat = np.load("hoc_matrix.npz")["hoc"]
         self.hog_feat = np.load("hog_matrix.npz")["hog"]
 

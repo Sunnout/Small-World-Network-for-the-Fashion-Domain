@@ -9,6 +9,7 @@ class SimilarityCalculator:
 
     def __init__(self, kn=10):
         dm = DataManager(True)
+        # If the features have already been extracted change to ImageProcessor(False)
         ip = ImageProcessor(True)
 
         color_matrix = ip.colors
@@ -17,24 +18,24 @@ class SimilarityCalculator:
         self.sim_matrix_colors = []
         self.sim_matrix_grads = []
 
-        # for i in range(0, dm.get_num_imgs() - 1):
-        for i in range(0, 1):
-            indexes_colors, dists_colors = k_neighbours(q=color_matrix[i].reshape(1, -1), X=color_matrix,
+        # Create similarity matrices
+        for i in range(0, dm.get_num_imgs() - 1):
+            # Color similarity matrix
+            indexes_colors, dists_colors = k_neighbours(query=color_matrix[i].reshape(1, -1), matrix=color_matrix,
                                                         metric="euclidean", k=kn)
 
-            #GET IMAGE NAMES ESTA MAL!!
-            self.sim_matrix_colors.append(list(zip(indexes_colors, dists_colors, dm.get_img_names()[i])))
+            self.sim_matrix_colors.append(list(zip(indexes_colors, dists_colors)))
 
-            indexes_grads, dists_grads = k_neighbours(q=grads_matrix[i].reshape(1, -1), X=grads_matrix,
+            # Gradients similarity matrix
+            indexes_grads, dists_grads = k_neighbours(query=grads_matrix[i].reshape(1, -1), matrix=grads_matrix,
                                                       metric="euclidean", k=kn)
 
-            self.sim_matrix_grads.append(list(zip(indexes_grads, dists_grads, dm.get_img_names()[i])))
+            self.sim_matrix_grads.append(list(zip(indexes_grads, dists_grads)))
 
 
-def k_neighbours(q, X, metric="euclidean", k=10):
-    dists = pairwise_distances(q, X, metric=metric)
+def k_neighbours(query, matrix, metric="euclidean", k=10):
+    dists = pairwise_distances(query, matrix, metric=metric)
 
-    # Dists gets a shape 1 x NumDocs. Convert it to shape NumDocs (i.e. drop the first dimension)
     dists = np.squeeze(dists)
     sorted_indexes = np.argsort(dists)
 
@@ -43,3 +44,4 @@ def k_neighbours(q, X, metric="euclidean", k=10):
 
 sc = SimilarityCalculator(kn=5)
 print(sc.sim_matrix_colors)
+print(sc.sim_matrix_grads)

@@ -43,4 +43,3 @@ class DataManager:
     @staticmethod
     def get_single_img(img_name):
         return imread(DIR + img_name)
-
