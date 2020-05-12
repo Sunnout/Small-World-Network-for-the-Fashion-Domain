@@ -8,6 +8,9 @@ from ImageProcessor import ImageProcessor
 class SimilarityCalculator:
 
     def __init__(self, update=False, kn=10):
+
+        self.kn = kn
+
         # Updates the images if update=True
         dm = DataManager(update)
         # Extracts the features again if update=True
@@ -21,7 +24,7 @@ class SimilarityCalculator:
             self.sim_matrix_grads = []
 
             # Creating similarity matrices
-            for i in range(0, dm.get_num_imgs() - 1):
+            for i in range(0, dm.get_num_imgs()):
                 # Color similarity matrix
                 indexes_colors, dists_colors = k_neighbours(query=color_matrix[i].reshape(1, -1), matrix=color_matrix,
                                                             metric="euclidean", k=kn)
@@ -50,8 +53,3 @@ def k_neighbours(query, matrix, metric="euclidean", k=10):
     dists = np.squeeze(dists)
     sorted_indexes = np.argsort(dists)
     return sorted_indexes[:k], dists[sorted_indexes[:k]]
-
-
-sc = SimilarityCalculator(False, kn=5)
-print(sc.sim_matrix_colors)
-print(sc.sim_matrix_grads)
