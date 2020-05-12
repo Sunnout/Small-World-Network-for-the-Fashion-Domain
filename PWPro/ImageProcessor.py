@@ -43,7 +43,7 @@ class ImageProcessor:
             self.colors = np.array(self.colors)
             np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
             self.grads = np.array(self.grads)
-            np.savez('{}.npz'.format("hog_matrix"), hoc=self.grads)
+            np.savez('{}.npz'.format("hog_matrix"), hog=self.grads)
 
         else:
             self.colors = np.load("hoc_matrix.npz")["hoc"]

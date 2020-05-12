@@ -7,30 +7,39 @@ from ImageProcessor import ImageProcessor
 
 class SimilarityCalculator:
 
-    def __init__(self, kn=10):
-        dm = DataManager(True)
-        # If the features have already been extracted change to ImageProcessor(False)
-        ip = ImageProcessor(True)
+    def __init__(self, update=False, kn=10):
+        # Updates the images and extracts the features again
+        dm = DataManager(update)
+        ip = ImageProcessor(update)
 
-        color_matrix = ip.colors
-        grads_matrix = ip.grads
+        if update:
+            color_matrix = ip.colors
+            grads_matrix = ip.grads
 
-        self.sim_matrix_colors = []
-        self.sim_matrix_grads = []
+            self.sim_matrix_colors = []
+            self.sim_matrix_grads = []
 
-        # Create similarity matrices
-        for i in range(0, dm.get_num_imgs() - 1):
-            # Color similarity matrix
-            indexes_colors, dists_colors = k_neighbours(query=color_matrix[i].reshape(1, -1), matrix=color_matrix,
-                                                        metric="euclidean", k=kn)
+            # Create similarity matrices
+            for i in range(0, dm.get_num_imgs() - 1):
+                # Color similarity matrix
+                indexes_colors, dists_colors = k_neighbours(query=color_matrix[i].reshape(1, -1), matrix=color_matrix,
+                                                            metric="euclidean", k=kn)
 
-            self.sim_matrix_colors.append(list(zip(indexes_colors, dists_colors)))
+                self.sim_matrix_colors.append(list(zip(indexes_colors, dists_colors)))
 
-            # Gradients similarity matrix
-            indexes_grads, dists_grads = k_neighbours(query=grads_matrix[i].reshape(1, -1), matrix=grads_matrix,
-                                                      metric="euclidean", k=kn)
+                # Gradients similarity matrix
+                indexes_grads, dists_grads = k_neighbours(query=grads_matrix[i].reshape(1, -1), matrix=grads_matrix,
+                                                          metric="euclidean", k=kn)
 
-            self.sim_matrix_grads.append(list(zip(indexes_grads, dists_grads)))
+                self.sim_matrix_grads.append(list(zip(indexes_grads, dists_grads)))
+
+            self.sim_matrix_colors = np.array(self.sim_matrix_colors)
+            self.sim_matrix_grads = np.array(self.sim_matrix_grads)
+            np.savez('{}.npz'.format("sim_matrix_colors"), color=self.sim_matrix_colors)
+            np.savez('{}.npz'.format("sim_matrix_grads"), grad=self.sim_matrix_grads)
+        else:
+            self.sim_matrix_colors = np.load("sim_matrix_colors.npz")["color"]
+            self.sim_matrix_grads = np.load("sim_matrix_grads.npz")["grad"]
 
 
 def k_neighbours(query, matrix, metric="euclidean", k=10):
@@ -42,6 +51,6 @@ def k_neighbours(query, matrix, metric="euclidean", k=10):
     return sorted_indexes[:k], dists[sorted_indexes[:k]]
 
 
-sc = SimilarityCalculator(kn=5)
+sc = SimilarityCalculator(False, kn=5)
 print(sc.sim_matrix_colors)
 print(sc.sim_matrix_grads)
