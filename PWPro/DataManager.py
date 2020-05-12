@@ -10,7 +10,7 @@ class DataManager:
 
     def __init__(self, update=False):
 
-        # Only updates image names if we call DataManager(update=True)
+        # Updates image names if update=True
         if update:
             self.image_names = self.get_img_names()
             np.savez('{}.npz'.format("image_names"), names=self.image_names)

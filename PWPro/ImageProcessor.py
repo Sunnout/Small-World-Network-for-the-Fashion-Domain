@@ -15,7 +15,7 @@ class ImageProcessor:
 
         self.image_names = np.load("image_names.npz")["names"]
 
-        # Only updates the feature matrices if we call ImageProcessor(update=True)
+        # Updates the feature matrices if update=True
         if update:
             self.colors = []
             self.grads = []
@@ -23,7 +23,7 @@ class ImageProcessor:
             for img_name in self.image_names:
                 img = dm.get_single_img(img_name)
 
-                # Extract HoC
+                # Extracting HoC
                 img = self.center_crop_image(img, size=224)
                 img_hsv = color.rgb2hsv(img)
                 img_int = img_as_ubyte(img_hsv)
@@ -31,21 +31,20 @@ class ImageProcessor:
                 color_feat = np.squeeze(normalize(color_hist.reshape(1, -1), norm="l2"))
                 self.colors.append(color_feat)
 
-                # Extract HoG
-                grad_hist = fe.my_hog(img)  # gray scale?
-                self.grads.append(grad_hist)
-
+                # Extracting HoG
                 img_gray = color.rgb2gray(img)
-                grad_hist = fe.my_hog(img_gray)
+                grad_hist = fe.my_hog(img_gray, orientations=8, pixels_per_cell=(32,32))
                 grad_feat = np.squeeze(normalize(grad_hist.reshape(1, -1), norm="l2"))
                 self.grads.append(grad_feat)
 
+            # Saving feature matrices in files
             self.colors = np.array(self.colors)
-            np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
             self.grads = np.array(self.grads)
+            np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
             np.savez('{}.npz'.format("hog_matrix"), hog=self.grads)
 
         else:
+            # Reading feature matrices from files
             self.colors = np.load("hoc_matrix.npz")["hoc"]
             self.grads = np.load("hog_matrix.npz")["hog"]
 
