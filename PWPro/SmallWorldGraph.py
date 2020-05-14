@@ -21,26 +21,40 @@ class SmallWorldGraph:
 
     """
 
-    def __init__(self):
+    def __init__(self, update=False):
 
         self.image_names = dm.get_img_names()
 
-        sc = SimilarityCalculator(True, kn=5)
+        sc = SimilarityCalculator(update, kn=5)
         self.number_neighbors = sc.kn
 
         # Reading similarity matrices
         self.sim_matrix_colors = np.load("sim_matrix_colors.npz")["color"]
-        # self.sim_matrix_grads = np.load("sim_matrix_grads")["grad"]
+        self.sim_matrix_grads = np.load("sim_matrix_grads.npz")["grad"]
 
-        color_graph = nx.Graph()
-        color_graph.add_edge(1, 2)  # default edge data=1
-        color_graph.add_edge(2, 3, weight=0.9)  # specify edge data
+        self.color_graph = nx.MultiGraph()
+        added_edges = []
 
-        print(self.sim_matrix_colors)
         # Creating all nodes: (index, image_name)
         for i in range(0, dm.get_num_imgs(self)):
-            color_graph.add_node((i, self.image_names[i]))
+            self.color_graph.add_node((i, self.image_names[i]))
 
             # Creating all edges for each node: (current_node_index, neighbor_index)
             for j in range(1, self.number_neighbors):
-                color_graph.add_edge(i, self.sim_matrix_colors[i, j][0])
+                # Check if color edge already exists
+                if (i, self.sim_matrix_colors[i, j][0], 'c') and (self.sim_matrix_colors[i, j][0], i, 'c') not in added_edges:
+                    self.color_graph.add_edge(i, self.sim_matrix_colors[i, j][0], tag='c')
+                    added_edges.append((i, self.sim_matrix_colors[i, j][0], 'c'))
+
+                # Check if gradient edge already exists
+                if (i, self.sim_matrix_grads[i, j][0], 'g') and (self.sim_matrix_grads[i, j][0], i, 'g') not in added_edges:
+                    self.color_graph.add_edge(i, self.sim_matrix_grads[i, j][0], tag='g')
+                    added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))
+
+        print(self.color_graph.edges.data())
+
+
+sw = SmallWorldGraph(update=False)
+#print(sw.color_graph.has_edge(*(0, 9, {'tag': 'g'})[:2]))
+#print(sw.color_graph[0][1][0]['tag'])
+
