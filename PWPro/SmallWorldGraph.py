@@ -43,18 +43,26 @@ class SmallWorldGraph:
             for j in range(1, self.number_neighbors):
                 # Check if color edge already exists
                 if (i, self.sim_matrix_colors[i, j][0], 'c') and (self.sim_matrix_colors[i, j][0], i, 'c') not in added_edges:
-                    self.color_graph.add_edge(i, self.sim_matrix_colors[i, j][0], tag='c')
+                    idx = (int)(self.sim_matrix_colors[i, j][0])
+                    self.color_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='c')
                     added_edges.append((i, self.sim_matrix_colors[i, j][0], 'c'))
 
                 # Check if gradient edge already exists
                 if (i, self.sim_matrix_grads[i, j][0], 'g') and (self.sim_matrix_grads[i, j][0], i, 'g') not in added_edges:
-                    self.color_graph.add_edge(i, self.sim_matrix_grads[i, j][0], tag='g')
+                    idx = (int)(self.sim_matrix_colors[i, j][0])
+                    self.color_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='g')
                     added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))
 
-        print(self.color_graph.edges.data())
+        # print(self.color_graph.edges.data())
 
 
 sw = SmallWorldGraph(update=False)
 #print(sw.color_graph.has_edge(*(0, 9, {'tag': 'g'})[:2]))
 #print(sw.color_graph[0][1][0]['tag'])
+
+#print("Nodes of graph: ")
+#print(sw.color_graph.nodes())
+#print("Edges of graph: ")
+#print(sw.color_graph.edges())
+#print(sw.color_graph.number_of_nodes())
 
