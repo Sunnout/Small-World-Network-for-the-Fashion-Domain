@@ -85,7 +85,7 @@ class SmallWorldGraph:
             a.imshow(dm.get_single_img(n[1]))
             a.axis('off')
         ax.axis('off')
-        plt.savefig(graph_name,format="pdf")
+        plt.savefig("Results/" + graph_name,format="pdf")
         plt.show()
 
     def calc_sw_measure(self):
