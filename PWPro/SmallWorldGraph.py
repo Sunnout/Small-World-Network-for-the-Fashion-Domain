@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from DataManager import DataManager as dm
 from SimilarityCalculator import SimilarityCalculator
 
-from PWPro.DataManager import DataManager
 
 
 class SmallWorldGraph:
@@ -19,6 +18,7 @@ class SmallWorldGraph:
     lattice_reference(G[, niter, D, …]) - Latticize the given graph by swapping edges.
     sigma(G[, niter, nrand, seed]) - Returns the small-world coefficient (sigma) of the given graph.
     omega(G[, niter, nrand, seed]) - Returns the small-world coefficient (omega) of a graph.
+    SmallWorldGraph.show_graph(sw.grad_graph, "grad_graph.pdf",img_size=0.05)
 
     If we want to compute them ourselves:
     average_clustering(G[, trials, seed]) - Returns the average clustering coefficient of a graph.
@@ -37,8 +37,8 @@ class SmallWorldGraph:
         self.sim_matrix_colors = np.load("sim_matrix_colors.npz")["color"]
         self.sim_matrix_grads = np.load("sim_matrix_grads.npz")["grad"]
 
-        self.color_graph = nx.MultiGraph()
-        self.grad_graph = nx.MultiGraph()
+        self.color_graph = nx.Graph()
+        self.grad_graph = nx.Graph()
         added_edges = []
 
         # Creating all nodes: (index, image_name)
@@ -49,15 +49,15 @@ class SmallWorldGraph:
             # Creating all edges for each node: (current_node_index, neighbor_index)
             for j in range(1, self.number_neighbors):
                 # Check if color edge already exists
-                if (i, self.sim_matrix_colors[i, j][0], 'c') and (self.sim_matrix_colors[i, j][0], i, 'c') not in added_edges:
-                    idx = (int)(self.sim_matrix_colors[i, j][0])
-                    self.color_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='c')
+                idx = (int)(self.sim_matrix_colors[i, j][0])
+                if (i, idx, 'c') and (idx, i, 'c') not in added_edges:
+                    self.color_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='c', length=self.sim_matrix_colors[i, j][1])
                     added_edges.append((i, self.sim_matrix_colors[i, j][0], 'c'))
 
                 # Check if gradient edge already exists
-                if (i, self.sim_matrix_grads[i, j][0], 'g') and (self.sim_matrix_grads[i, j][0], i, 'g') not in added_edges:
-                    idx = (int)(self.sim_matrix_grads[i, j][0])
-                    self.grad_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='g')
+                idx = (int)(self.sim_matrix_grads[i, j][0])
+                if (i, idx, 'g') and (idx, i, 'g') not in added_edges:
+                    self.grad_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='g', length=self.sim_matrix_grads[i, j][1])
                     added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))
 
         # print(self.color_graph.edges.data())
@@ -65,7 +65,7 @@ class SmallWorldGraph:
     @staticmethod
     def show_graph(G, graph_name, img_size=0.1):
         pos = nx.circular_layout(G)
-        fig = plt.figure(figsize=(5, 5))
+        fig = plt.figure(figsize=(20, 20))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
         nx.draw_networkx_edges(G, pos, ax=ax)
@@ -82,24 +82,15 @@ class SmallWorldGraph:
             xa, ya = trans2((xx, yy))  # axes coordinates
             a = plt.axes([xa - p2, ya - p2, img_size, img_size])
             a.set_aspect('equal')
-            a.imshow(DataManager.get_single_img(n[1]))
+            a.imshow(dm.get_single_img(n[1]))
             a.axis('off')
         ax.axis('off')
-        plt.savefig(graph_name)
+        plt.savefig(graph_name,format="pdf")
         plt.show()
 
+    def calc_sw_measure(self):
+        print(nx.sigma(self.color_graph))
+
 sw = SmallWorldGraph(update=False)
-#print(sw.color_graph.has_edge(*(0, 9, {'tag': 'g'})[:2]))
-#print(sw.color_graph[0][1][0]['tag'])
-
-#print("Nodes of graph: ")
-nodes = list(sw.color_graph.nodes)
-print([i[0] for i in nodes])
-
-# ***** DRAW ****** #
-
-SmallWorldGraph.show_graph(sw.color_graph, "color_graph.png")
-SmallWorldGraph.show_graph(sw.grad_graph, "grad_graph.png")
-
-
-
+sw.calc_sw_measure()
+print(sw.color_graph.edges.data())
