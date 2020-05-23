@@ -1,3 +1,5 @@
+import time
+
 from numpy import sqrt
 
 import networkx as nx
@@ -88,9 +90,16 @@ class SmallWorldGraph:
         plt.savefig("Results/" + graph_name,format="pdf")
         plt.show()
 
-    def calc_sw_measure(self):
-        print(nx.sigma(self.color_graph))
+    def calc_sw_measure(self): # This bitch slow asf, takes on average 14 secs
+        return nx.sigma(self.color_graph)
 
+    def calc_sw_coefficient(self): # This bitch is also slow asf, takes on average 22 secs
+        return nx.omega(self.color_graph)
+
+ts = time.time()
 sw = SmallWorldGraph(update=False)
-sw.calc_sw_measure()
-print(sw.color_graph.edges.data())
+print("Building Took: ", time.time() - ts)
+ts = time.time()
+print("Sigma: ",sw.calc_sw_measure(), " Took: ", time.time() - ts)
+ts = time.time()
+print("Omega: ", sw.calc_sw_coefficient(), " Took: ", time.time() - ts)
