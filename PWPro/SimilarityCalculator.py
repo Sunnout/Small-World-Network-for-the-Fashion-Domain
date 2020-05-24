@@ -7,49 +7,85 @@ from ImageProcessor import ImageProcessor
 
 class SimilarityCalculator:
 
-    def __init__(self, update=False, kn=10):
-
-        self.kn = kn
+    def __init__(self, update=False):
 
         # Updates the images if update=True
         dm = DataManager(update)
         # Extracts the features again if update=True
         ip = ImageProcessor(update)
 
+        self.color_matrix = ip.colors
+        self.grads_matrix = ip.grads
+
         if update:
-            color_matrix = ip.colors
-            grads_matrix = ip.grads
 
             self.sim_matrix_colors = []
             self.sim_matrix_grads = []
 
+            color_max, grad_max = self.calc_sum_distances(dm)
+            num_imgs = dm.get_num_imgs()
+
+            self.final_matrix = np.zeros((num_imgs, num_imgs))
+
             # Creating similarity matrices
-            for i in range(0, dm.get_num_imgs()):
+            for i in range(0, num_imgs):
                 # Color similarity matrix
-                indexes_colors, dists_colors = k_neighbours(query=color_matrix[i].reshape(1, -1), matrix=color_matrix,
-                                                            metric="euclidean", k=kn)
+                for j in range(i+1, num_imgs):
+                    dist = pairwise_distances(self.color_matrix[i].reshape(1, -1), self.color_matrix[j].reshape(1, -1), metric="euclidean")
+                    norm_dist = np.squeeze(dist/color_max)
+                    self.final_matrix[i, j] += norm_dist
 
-                self.sim_matrix_colors.append(list(zip(indexes_colors, dists_colors)))
+                    dist = pairwise_distances(self.grads_matrix[i].reshape(1, -1), self.grads_matrix[j].reshape(1, -1),
+                                              metric="euclidean")
+                    norm_dist = np.squeeze(dist / grad_max)
+                    self.final_matrix[i, j] += norm_dist
+                    self.final_matrix[j, i] = self.final_matrix[i, j]
 
-                # Gradients similarity matrix
-                indexes_grads, dists_grads = k_neighbours(query=grads_matrix[i].reshape(1, -1), matrix=grads_matrix,
-                                                          metric="euclidean", k=kn)
 
-                self.sim_matrix_grads.append(list(zip(indexes_grads, dists_grads)))
-
-            # Saving similarity matrices in files
-            self.sim_matrix_colors = np.array(self.sim_matrix_colors)
-            self.sim_matrix_grads = np.array(self.sim_matrix_grads)
-            np.savez('{}.npz'.format("sim_matrix_colors"), color=self.sim_matrix_colors)
-            np.savez('{}.npz'.format("sim_matrix_grads"), grad=self.sim_matrix_grads)
+            # Saving distance matrix in file
+            np.savez('{}.npz'.format("final_dist_matrix"), dist=self.final_matrix)
         else:
-            # Reading similarity matrices from files
-            self.sim_matrix_colors = np.load("sim_matrix_colors.npz")["color"]
-            self.sim_matrix_grads = np.load("sim_matrix_grads.npz")["grad"]
+            # Reading distance matrix from file
+            self.final_matrix = np.load("final_dist_matrix.npz")["dist"]
 
+    @staticmethod
+    def k_neighbours(query, matrix, metric="euclidean", k=10):
+        dists = pairwise_distances(query, matrix, metric=metric)
+        dists = np.squeeze(dists)
+        sorted_indexes = np.argsort(dists)
+        return sorted_indexes[:k], dists[sorted_indexes[:k]]
 
-def k_neighbours(query, matrix, metric="euclidean", k=10):
-    dists = pairwise_distances(query, matrix, metric=metric)
-    dists = np.squeeze(dists)
-    sorted_indexes = np.argsort(dists)
-    return sorted_indexes[:k], dists[sorted_indexes[:k]]
+    def calc_max_distances(self, dm):
+        imgs = dm.get_rand_set(10)
+        max_dist_color = -1
+        max_dist_grad = -1
+        for img1 in imgs:
+            for img2 in imgs:
+                if img1 != img2:
+                    d = pairwise_distances(self.color_matrix[img1].reshape(1, -1),
+                                           self.color_matrix[img2].reshape(1, -1),
+                                           metric="euclidean")
+                    if d > max_dist_color:
+                        max_dist_color = d
+                    d = pairwise_distances(self.grads_matrix[img1].reshape(1, -1),
+                                           self.grads_matrix[img2].reshape(1, -1),
+                                           metric="euclidean")
+                    if d > max_dist_grad:
+                        max_dist_grad = d
+        return max_dist_color, max_dist_grad
+
+    def calc_sum_distances(self, dm):
+        imgs = dm.get_rand_set(10)
+        sum_dist_color = 0
+        sum_dist_grad = 0
+        for img1 in imgs:
+            for img2 in imgs:
+                if img1 != img2:
+                    sum_dist_color += pairwise_distances(self.color_matrix[img1].reshape(1, -1),
+                                           self.color_matrix[img2].reshape(1, -1),
+                                           metric="euclidean")
+
+                    sum_dist_grad += pairwise_distances(self.grads_matrix[img1].reshape(1, -1),
+                                           self.grads_matrix[img2].reshape(1, -1),
+                                           metric="euclidean")
+        return sum_dist_color, sum_dist_grad

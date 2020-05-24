@@ -32,24 +32,22 @@ class SmallWorldGraph:
 
         self.image_names = dm.get_img_names()
 
-        sc = SimilarityCalculator(update, kn=5)
-        self.number_neighbors = sc.kn
+        sc = SimilarityCalculator(update)
 
-        # Reading similarity matrices
-        self.sim_matrix_colors = np.load("sim_matrix_colors.npz")["color"]
-        self.sim_matrix_grads = np.load("sim_matrix_grads.npz")["grad"]
+        # Reading distance matrix
+        self.dist_matrix = np.load("final_dist_matrix.npz")["dist"]
 
-        self.color_graph = nx.Graph()
-        self.grad_graph = nx.Graph()
+        self.graph = nx.Graph()
         added_edges = []
-
+        num_imgs = dm.get_num_imgs(self)
         # Creating all nodes: (index, image_name)
-        for i in range(0, dm.get_num_imgs(self)):
-            self.color_graph.add_node((i, self.image_names[i]))
-            self.grad_graph.add_node((i, self.image_names[i]))
+        for i in range(0, num_imgs):
+            for j in range(i+1 , num_imgs):
+                self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), length=self.dist_matrix[i, j])
+
 
             # Creating all edges for each node: (current_node_index, neighbor_index)
-            for j in range(1, self.number_neighbors):
+            """for j in range(1, self.number_neighbors):
                 # Check if color edge already exists
                 idx = (int)(self.sim_matrix_colors[i, j][0])
                 if (i, idx, 'c') and (idx, i, 'c') not in added_edges:
@@ -60,9 +58,11 @@ class SmallWorldGraph:
                 idx = (int)(self.sim_matrix_grads[i, j][0])
                 if (i, idx, 'g') and (idx, i, 'g') not in added_edges:
                     self.grad_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='g', length=self.sim_matrix_grads[i, j][1])
-                    added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))
+                    added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))"""
 
-        # print(self.color_graph.edges.data())
+
+
+        print(self.graph.nodes())
 
     @staticmethod
     def show_graph(G, graph_name, img_size=0.1):
@@ -87,7 +87,7 @@ class SmallWorldGraph:
             a.imshow(dm.get_single_img(n[1]))
             a.axis('off')
         ax.axis('off')
-        plt.savefig("Results/" + graph_name,format="pdf")
+        plt.savefig("../Results/" + graph_name,format="pdf")
         plt.show()
 
     def calc_sw_measure(self): # This bitch slow asf, takes on average 14 secs
@@ -97,9 +97,11 @@ class SmallWorldGraph:
         return nx.omega(self.color_graph)
 
 ts = time.time()
-sw = SmallWorldGraph(update=False)
-print("Building Took: ", time.time() - ts)
+sw = SmallWorldGraph(update=True)
+SmallWorldGraph.show_graph(sw.graph, "graph.pdf",img_size=0.05)
+
+"""print("Building Took: ", time.time() - ts)
 ts = time.time()
 print("Sigma: ",sw.calc_sw_measure(), " Took: ", time.time() - ts)
 ts = time.time()
-print("Omega: ", sw.calc_sw_coefficient(), " Took: ", time.time() - ts)
+print("Omega: ", sw.calc_sw_coefficient(), " Took: ", time.time() - ts)"""

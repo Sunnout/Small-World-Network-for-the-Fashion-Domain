@@ -37,6 +37,9 @@ class ImageProcessor:
                 grad_feat = np.squeeze(normalize(grad_hist.reshape(1, -1), norm="l2"))
                 self.grads.append(grad_feat)
 
+                #Extracting VGG16
+                fe.vgg16_layer(img)
+
             # Saving feature matrices in files
             self.colors = np.array(self.colors)
             self.grads = np.array(self.grads)
@@ -66,3 +69,6 @@ class ImageProcessor:
         im = im[h // 2 - 112:h // 2 + 112, w // 2 - 112:w // 2 + 112]
 
         return im
+
+
+im = ImageProcessor(True)

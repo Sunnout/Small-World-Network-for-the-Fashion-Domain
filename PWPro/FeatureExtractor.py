@@ -1,8 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.models import Model
+
 from skimage.feature import hog
 from skimage import exposure
+
+from DataManager import DataManager as dm
 
 
 def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
@@ -53,3 +60,22 @@ def plot_hog(fd, hog_image, img):
     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
     ax2.set_title('Histogram of Oriented Gradients', fontsize=18)
     plt.show()
+
+
+def vgg16_layer(img):
+    model = VGG16(weights='imagenet', include_top=True)
+    model_layer = Model(inputs=model.input, outputs=model.get_layer('block1_pool').output)
+
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+
+    features = model_layer.predict(x)
+
+    from keras.applications.vgg16 import decode_predictions
+    # convert the probabilities to class labels
+    label = decode_predictions(features)
+    # retrieve the most likely result, e.g. highest probability
+    label = label[0][0]
+    # print the classification
+    print('%s (%.2f%%)' % (label[1], label[2] * 100))

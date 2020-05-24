@@ -44,10 +44,9 @@ class DataManager:
     def get_single_img(img_name):
         return imread(DIR + img_name)
 
-    @staticmethod
-    def get_rand_set(size):
-        img_list = DataManager.get_img_names()
-        if size > len(img_list):
-            size = len(img_list)
-        return random.sample(img_list, size)
+    def get_rand_set(self, size):
+        num_imgs = self.get_num_imgs()
+        if size > num_imgs:
+            return range(0, num_imgs)
+        return random.sample(range(0, num_imgs), size)
 
