@@ -28,6 +28,12 @@ class DataManager:
         img_list = self.get_all_imgs()
         return random.choice(img_list)
 
+    def get_rand_set(self, size):
+        img_list = self.get_all_imgs()
+        if size > len(img_list):
+            size = len(img_list)
+        return random.sample(img_list, size)
+
     def get_num_imgs(self):
         return len(self.image_names)
 
