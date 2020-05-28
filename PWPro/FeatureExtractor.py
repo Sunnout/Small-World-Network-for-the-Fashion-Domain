@@ -64,7 +64,7 @@ def plot_hog(fd, hog_image, img):
 
 def vgg16_layer(img):
     model = VGG16(weights='imagenet', include_top=True)
-    model_layer = Model(inputs=model.input, outputs=model.get_layer('block1_pool').output)
+    model_layer = Model(inputs=model.input, outputs=model.get_layer('fc1').output)
 
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
@@ -74,8 +74,9 @@ def vgg16_layer(img):
 
     from keras.applications.vgg16 import decode_predictions
     # convert the probabilities to class labels
-    label = decode_predictions(features)
+    #label = decode_predictions(features)
     # retrieve the most likely result, e.g. highest probability
-    label = label[0][0]
+    # label = label[0][0]
     # print the classification
-    print('%s (%.2f%%)' % (label[1], label[2] * 100))
+    #print('%s (%.2f%%)' % (label[1], label[2] * 100))
+    print(features)

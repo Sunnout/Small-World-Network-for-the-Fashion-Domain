@@ -38,7 +38,7 @@ class ImageProcessor:
                 self.grads.append(grad_feat)
 
                 #Extracting VGG16
-                fe.vgg16_layer(img)
+                #fe.vgg16_layer(img)
 
             # Saving feature matrices in files
             self.colors = np.array(self.colors)

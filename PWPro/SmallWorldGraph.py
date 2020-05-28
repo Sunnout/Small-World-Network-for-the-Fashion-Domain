@@ -43,7 +43,7 @@ class SmallWorldGraph:
         # Creating all nodes: (index, image_name)
         for i in range(0, num_imgs):
             for j in range(i+1 , num_imgs):
-                self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), length=self.dist_matrix[i, j])
+                self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
 
 
             # Creating all edges for each node: (current_node_index, neighbor_index)
@@ -62,10 +62,10 @@ class SmallWorldGraph:
 
 
 
-        print(self.graph.nodes())
+        #print(self.graph.nodes())
 
     @staticmethod
-    def show_graph(G, graph_name, img_size=0.1):
+    def show_graph(G, graph_name, img_size=0.1, ):
         pos = nx.circular_layout(G)
         fig = plt.figure(figsize=(20, 20))
         ax = plt.subplot(111)
@@ -87,8 +87,41 @@ class SmallWorldGraph:
             a.imshow(dm.get_single_img(n[1]))
             a.axis('off')
         ax.axis('off')
-        plt.savefig("../Results/" + graph_name,format="pdf")
+        plt.savefig("./Results/" + graph_name,format="pdf")
         plt.show()
+
+
+    @staticmethod
+    def draw_path(graph, src, dst, img_size=0.1, graph_name="path.pdf"):
+        nodes = nx.shortest_path(graph, src, dst, weight="distance")
+        pos = nx.circular_layout(graph)
+        fig = plt.figure(figsize=(20, 20))
+        ax = plt.subplot(111)
+        ax.set_aspect('equal')
+        edges = []
+        for i in range(1, len(nodes)):
+            edges.append((nodes[i-1],nodes[i]))
+        nx.draw_networkx_edges(graph, pos, ax=ax, edgelist=edges)
+
+        plt.xlim(-1.5, 1.5)
+        plt.ylim(-1.5, 1.5)
+
+        trans = ax.transData.transform
+        trans2 = fig.transFigure.inverted().transform
+
+        p2 = img_size / 2.0
+        for n in nodes:
+            xx, yy = trans(pos[n])  # figure coordinates
+            xa, ya = trans2((xx, yy))  # axes coordinates
+            a = plt.axes([xa - p2, ya - p2, img_size, img_size])
+            a.set_aspect('equal')
+            a.imshow(dm.get_single_img(n[1]))
+            a.axis('off')
+        ax.axis('off')
+        plt.savefig("./Results/" + graph_name, format="pdf")
+        plt.show()
+
+
 
     def calc_sw_measure(self): # This bitch slow asf, takes on average 14 secs
         return nx.sigma(self.color_graph)
@@ -98,7 +131,9 @@ class SmallWorldGraph:
 
 ts = time.time()
 sw = SmallWorldGraph(update=True)
-SmallWorldGraph.show_graph(sw.graph, "graph.pdf",img_size=0.05)
+#SmallWorldGraph.show_graph(sw.graph, "graph.pdf",img_size=0.05)
+
+print(SmallWorldGraph.draw_path(sw.graph, (0, "img_00000001.jpg"), (1, "img_00000003.jpg")))
 
 """print("Building Took: ", time.time() - ts)
 ts = time.time()
