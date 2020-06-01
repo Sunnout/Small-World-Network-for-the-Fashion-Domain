@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from DataManager import DataManager as dm
+from ImageProcessor import ImageProcessor as ip
 from SimilarityCalculator import SimilarityCalculator
 
 
@@ -32,7 +33,7 @@ class SmallWorldGraph:
 
         self.image_names = dm.get_img_names()
 
-        sc = SimilarityCalculator(update)
+        self.sc = SimilarityCalculator(update)
 
         # Reading distance matrix
         self.dist_matrix = np.load("final_dist_matrix.npz")["dist"]
@@ -45,24 +46,6 @@ class SmallWorldGraph:
             for j in range(i+1 , num_imgs):
                 self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
 
-
-            # Creating all edges for each node: (current_node_index, neighbor_index)
-            """for j in range(1, self.number_neighbors):
-                # Check if color edge already exists
-                idx = (int)(self.sim_matrix_colors[i, j][0])
-                if (i, idx, 'c') and (idx, i, 'c') not in added_edges:
-                    self.color_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='c', length=self.sim_matrix_colors[i, j][1])
-                    added_edges.append((i, self.sim_matrix_colors[i, j][0], 'c'))
-
-                # Check if gradient edge already exists
-                idx = (int)(self.sim_matrix_grads[i, j][0])
-                if (i, idx, 'g') and (idx, i, 'g') not in added_edges:
-                    self.grad_graph.add_edge((i, self.image_names[i]), (idx, self.image_names[idx]), tag='g', length=self.sim_matrix_grads[i, j][1])
-                    added_edges.append((i, self.sim_matrix_grads[i, j][0], 'g'))"""
-
-
-
-        #print(self.graph.nodes())
 
     @staticmethod
     def show_graph(G, graph_name, img_size=0.1, ):
@@ -90,11 +73,11 @@ class SmallWorldGraph:
         plt.savefig("./Results/" + graph_name,format="pdf")
         plt.show()
 
-
+    #SmallWorldGraph.draw_path(sw.graph, (0, "img_00000001.jpg"), (1, "img_00000003.jpg"))
     @staticmethod
     def draw_path(graph, src, dst, img_size=0.1, graph_name="path.pdf"):
         nodes = nx.shortest_path(graph, src, dst, weight="distance")
-        pos = nx.circular_layout(graph)
+        pos = nx.kamada_kawai_layout(graph)
         fig = plt.figure(figsize=(20, 20))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
@@ -121,6 +104,27 @@ class SmallWorldGraph:
         plt.savefig("./Results/" + graph_name, format="pdf")
         plt.show()
 
+    def draw_kneighbours(self, src, graph_name="kneighbours.pdf", k=10):
+        idx = dm.get_img_names()
+        fig = plt.figure(figsize=(25, 20))
+        columns = k
+        rows = 1
+        for i in range(1, columns * rows +1 ):
+            img = ip.center_crop_image(dm.get_single_img(idx[self.sc.color_neigh[src[0]][i-1]]))
+            fig.add_subplot(rows, columns, i)
+            plt.imshow(img)
+            if i == 1:
+                plt.title("Query Image")
+            else:
+                plt.title("Neighbour " + str(i - 1))
+            plt.axis("off")
+
+        plt.show()
+        fig.savefig(graph_name, format="pdf")
+
+
+
+
 
 
     def calc_sw_measure(self): # This bitch slow asf, takes on average 14 secs
@@ -133,10 +137,4 @@ ts = time.time()
 sw = SmallWorldGraph(update=True)
 #SmallWorldGraph.show_graph(sw.graph, "graph.pdf",img_size=0.05)
 
-print(SmallWorldGraph.draw_path(sw.graph, (0, "img_00000001.jpg"), (1, "img_00000003.jpg")))
-
-"""print("Building Took: ", time.time() - ts)
-ts = time.time()
-print("Sigma: ",sw.calc_sw_measure(), " Took: ", time.time() - ts)
-ts = time.time()
-print("Omega: ", sw.calc_sw_coefficient(), " Took: ", time.time() - ts)"""
+sw.draw_kneighbours(dm.get_img_index("img_00000003.jpg"), )

@@ -41,8 +41,18 @@ class DataManager:
         return name_list
 
     @staticmethod
+    def get_img_index(img):
+        print("("+str(DataManager.get_img_names().index(img))+", "+img+")")
+        return (DataManager.get_img_names().index(img), img)
+
+
+    @staticmethod
     def get_single_img(img_name):
         return imread(DIR + img_name)
+
+    @staticmethod
+    def get_img_path(img_name):
+        return DIR + img_name
 
     def get_rand_set(self, size):
         num_imgs = self.get_num_imgs()
