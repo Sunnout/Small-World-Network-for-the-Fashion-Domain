@@ -30,6 +30,10 @@ class SmallWorldGraph:
     """
 
     def __init__(self, update=False):
+        self.images_names = []
+        self.dist_matrix = []
+        self.sc = None
+        self.graph = None
 
         self.image_names = dm.get_img_names()
 
@@ -43,7 +47,24 @@ class SmallWorldGraph:
         num_imgs = dm.get_num_imgs(self)
         # Creating all nodes: (index, image_name)
         for i in range(0, num_imgs):
-            for j in range(i+1 , num_imgs):
+            for j in range(i + 1, num_imgs):
+                self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
+
+
+    def initialize(self, update=False):
+        self.image_names = dm.get_img_names()
+
+        self.sc = sc.initialize(update)
+
+        # Reading distance matrix
+        self.dist_matrix = np.load("final_dist_matrix.npz")["dist"]
+
+        self.graph = nx.Graph()
+        added_edges = []
+        num_imgs = dm.get_num_imgs(self)
+        # Creating all nodes: (index, image_name)
+        for i in range(0, num_imgs):
+            for j in range(i + 1, num_imgs):
                 self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
 
 
@@ -104,13 +125,24 @@ class SmallWorldGraph:
         plt.savefig("./Results/" + graph_name, format="pdf")
         plt.show()
 
-    def draw_kneighbours(self, src, graph_name="kneighbours.pdf", k=10):
+    def draw_kneighbours(self, src, graph_name="kneighbours.pdf", k=10, feat="colors"):
         idx = dm.get_img_names()
         fig = plt.figure(figsize=(25, 20))
         columns = k
         rows = 1
+        if feat == "colors":
+            neighbours = self.sc.color_neigh
+        elif feat == "grads":
+            neighbours = self.sc.grads_neigh
+        elif feat == "vgg1":
+            neighbours = self.sc.vgg16_block1_neigh
+        elif feat == "vgg2":
+            neighbours = self.sc.vgg16_block2_neigh
+        else:
+            neighbours = self.sc.color_neigh
+
         for i in range(1, columns * rows +1 ):
-            img = ip.center_crop_image(dm.get_single_img(idx[self.sc.color_neigh[src[0]][i-1]]))
+            img = ip.center_crop_image(dm.get_single_img(idx[neighbours[src[0]][i-1]]))
             fig.add_subplot(rows, columns, i)
             plt.imshow(img)
             if i == 1:
@@ -119,7 +151,7 @@ class SmallWorldGraph:
                 plt.title("Neighbour " + str(i - 1))
             plt.axis("off")
 
-        plt.show()
+        #plt.show()
         fig.savefig(graph_name, format="pdf")
 
 
@@ -133,8 +165,4 @@ class SmallWorldGraph:
     def calc_sw_coefficient(self): # This bitch is also slow asf, takes on average 22 secs
         return nx.omega(self.color_graph)
 
-ts = time.time()
-sw = SmallWorldGraph(update=True)
-#SmallWorldGraph.show_graph(sw.graph, "graph.pdf",img_size=0.05)
-
-sw.draw_kneighbours(dm.get_img_index("img_00000003.jpg"), )
+#ts = time.time()

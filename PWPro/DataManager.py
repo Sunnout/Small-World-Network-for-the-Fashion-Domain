@@ -9,10 +9,20 @@ DIR = "../Data/"
 class DataManager:
 
     def __init__(self, update=False):
-
+        self.image_names = []
         # Updates image names if update=True
         if update:
             self.image_names = self.get_img_names()
+            print(self.image_names)
+            np.savez('{}.npz'.format("image_names"), names=self.image_names)
+        else:
+            self.image_names = np.load("image_names.npz")["names"]
+
+    def initialize(self, update=False):
+        # Updates image names if update=True
+        if update:
+            self.image_names = self.get_img_names()
+            print(self.image_names)
             np.savez('{}.npz'.format("image_names"), names=self.image_names)
         else:
             self.image_names = np.load("image_names.npz")["names"]
@@ -59,4 +69,3 @@ class DataManager:
         if size > num_imgs:
             return range(0, num_imgs)
         return random.sample(range(0, num_imgs), size)
-
