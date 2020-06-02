@@ -28,6 +28,7 @@ class SimilarityCalculator:
         self.grads_matrix = ip.grads
         self.vgg16_block1_matrix = ip.vgg_block1
         self.vgg16_block2_matrix = ip.vgg_block2
+        self.vgg16_block3_matrix = ip.vgg_block3
 
         if update:
             color_normalizer, grad_normalizer = self.calc_sum_distances(dm)
@@ -54,7 +55,9 @@ class SimilarityCalculator:
                 self.vgg16_block2_neigh.append(neighbours)
 
                 # Calculating k-NN of image i according to vgg16_block3 feature
-                # TODO
+                neighbours, _ = self.k_neighbours(self.vgg16_block3_matrix[i].reshape(1, -1), self.vgg16_block3_matrix,
+                                                  k=10)
+                self.vgg16_block3_neigh.append(neighbours)
 
                 for j in range(i + 1, num_imgs):
                     # Calculating color distances, normalizing and adding them to the final matrix
@@ -87,6 +90,7 @@ class SimilarityCalculator:
             np.savez('{}.npz'.format(FILES_DIR + "grads_neighbours"), knn=self.grads_neigh)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_neighbours"), knn=self.vgg16_block1_neigh)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_neighbours"), knn=self.vgg16_block2_neigh)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block3_neighbours"), knn=self.vgg16_block3_neigh)
         else:
             # Reading distance matrix from file
             self.final_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
@@ -94,6 +98,7 @@ class SimilarityCalculator:
             self.grads_neigh = np.load(FILES_DIR + "grads_neighbours.npz")["knn"]
             self.vgg16_block1_neigh = np.load(FILES_DIR + "vgg16_block1_neighbours.npz")["knn"]
             self.vgg16_block2_neigh = np.load(FILES_DIR + "vgg16_block2_neighbours.npz")["knn"]
+            self.vgg16_block3_neigh = np.load(FILES_DIR + "vgg16_block3_neighbours.npz")["knn"]
 
     @staticmethod
     def k_neighbours(query, matrix, metric="euclidean", k=10):
@@ -131,6 +136,8 @@ class SimilarityCalculator:
                     if d > max_dist_grad:
                         max_dist_grad = d
 
+                    # TODO vgg16 features max distances
+
         return max_dist_color, max_dist_grad
 
     def calc_sum_distances(self, dm, metric="euclidean"):
@@ -153,5 +160,7 @@ class SimilarityCalculator:
                     sum_dist_grad += pairwise_distances(self.grads_matrix[img1].reshape(1, -1),
                                                         self.grads_matrix[img2].reshape(1, -1),
                                                         metric=metric)
+
+                    # TODO vgg16 features sum distances
 
         return sum_dist_color, sum_dist_grad

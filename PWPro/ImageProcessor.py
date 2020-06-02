@@ -48,26 +48,28 @@ class ImageProcessor:
                 self.vgg_block2.append(vgg16)
 
                 # Extracting VGG16_block3
-                # TODO
+                vgg16 = fe.vgg16_layer(img, layer='block3_pool')
+                self.vgg_block3.append(vgg16)
 
             # Saving feature matrices in files
             self.colors = np.array(self.colors)
             self.grads = np.array(self.grads)
             self.vgg_block1 = np.array(self.vgg_block1)
             self.vgg_block2 = np.array(self.vgg_block2)
+            self.vgg_block3 = np.array(self.vgg_block3)
             np.savez('{}.npz'.format(FILES_DIR + "hoc_matrix"), hoc=self.colors)
             np.savez('{}.npz'.format(FILES_DIR + "hog_matrix"), hog=self.grads)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_matrix"), b1=self.vgg_block1)
-            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_matrix"), b1=self.vgg_block2)
-            # TODO store vgg16_block3
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_matrix"), b2=self.vgg_block2)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block3_matrix"), b3=self.vgg_block3)
 
         else:
             # Reading feature matrices from files
             self.colors = np.load(FILES_DIR + "hoc_matrix.npz")["hoc"]
             self.grads = np.load(FILES_DIR + "hog_matrix.npz")["hog"]
             self.vgg_block1 = np.load(FILES_DIR + "vgg16_block1_matrix.npz")["b1"]
-            self.vgg_block2 = np.load(FILES_DIR + "vgg16_block2_matrix.npz")["b1"]
-            # TODO read vgg16_block3
+            self.vgg_block2 = np.load(FILES_DIR + "vgg16_block2_matrix.npz")["b2"] # Mudar para b2 quando correr com True outra vez
+            self.vgg_block3 = np.load(FILES_DIR + "vgg16_block3_matrix.npz")["b3"]
 
     @staticmethod
     def center_crop_image(im, size=224):

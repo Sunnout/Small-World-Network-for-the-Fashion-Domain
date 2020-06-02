@@ -13,7 +13,6 @@ RESULTS_DIR = "../Results/"
 FILES_DIR = "../Files/"
 
 
-
 class SmallWorldGraph:
     """
     Documentation: https://networkx.github.io/documentation/stable/reference/index.html
@@ -126,7 +125,8 @@ class SmallWorldGraph:
             neighbours = self.sc.vgg16_block1_neigh
         elif feat == "vgg2":
             neighbours = self.sc.vgg16_block2_neigh
-            # TODO vgg3
+        elif feat == "vgg3":
+            neighbours = self.sc.vgg16_block3_neigh
         else:
             neighbours = self.sc.color_neigh
 
