@@ -9,6 +9,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import Model
 import tensorflow as tf
+from tensorflow_core.python import Session
 
 
 def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
@@ -43,7 +44,7 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
 def vgg16_layer(img, layer='block1_pool'):
     """ Extracts the feature values for a given image (img), from a given vgg16
       layer (layer). """
-
+    tf.keras.backend.clear_session()
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
     print(model.input)
@@ -54,13 +55,16 @@ def vgg16_layer(img, layer='block1_pool'):
     x = preprocess_input(x)
 
     features = model_layer.predict(x)
-    pool_feat = tf.constant(features)
-    print(features.shape)
-    pool_feat = tf.reshape(pool_feat, features.shape)
-    pool_feat = max_pool_2d(pool_feat)
-    pool_feat = pool_feat.flatten()
-    print(pool_feat.shape)
-    return pool_feat
+    '''sess = Session()
+    with sess.as_default():
+        pool_feat = tf.constant(features)
+        print(features.shape)
+        pool_feat = tf.reshape(pool_feat, features.shape)
+        pool_feat = max_pool_2d(pool_feat)
+
+        pool_feat = pool_feat.eval(session=sess).flatten()
+    print(pool_feat.shape)'''
+    return features.flatten()
 
 
 def plot_hoc(hist_r, bins_r):

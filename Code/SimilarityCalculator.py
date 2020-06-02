@@ -33,7 +33,7 @@ class SimilarityCalculator:
         self.vgg16_block3_neigh = []
 
         if update:
-            color_normalizer, grad_normalizer = self.calc_sum_distances(dm)
+            color_normalizer, grad_normalizer = self.calc_sum_distances(self.dm)
             num_imgs = self.dm.get_num_imgs()
             self.final_matrix = np.zeros((num_imgs, num_imgs))
 
