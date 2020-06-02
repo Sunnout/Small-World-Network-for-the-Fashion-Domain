@@ -22,47 +22,42 @@ class SimilarityCalculator:
          pair of images. """
 
         # Updates the image database if update=True
-        dm = DataManager(update)
+        self.dm = DataManager(update)
         # Extracts the features again if update=True
-        ip = ImageProcessor(update)
+        self.ip = ImageProcessor(update)
 
         self.color_neigh = []
         self.grads_neigh = []
         self.vgg16_block1_neigh = []
         self.vgg16_block2_neigh = []
         self.vgg16_block3_neigh = []
-        self.color_matrix = ip.colors
-        self.grads_matrix = ip.grads
-        self.vgg16_block1_matrix = ip.vgg_block1
-        self.vgg16_block2_matrix = ip.vgg_block2
-        self.vgg16_block3_matrix = ip.vgg_block3
 
         if update:
             color_normalizer, grad_normalizer = self.calc_sum_distances(dm)
-            num_imgs = dm.get_num_imgs()
+            num_imgs = self.dm.get_num_imgs()
             self.final_matrix = np.zeros((num_imgs, num_imgs))
 
             for i in range(0, num_imgs):
                 # Calculating k-NN of image i according to color feature
-                neighbours, _ = self.k_neighbours(self.color_matrix[i].reshape(1, -1), self.color_matrix, k=10)
+                neighbours, _ = self.k_neighbours(self.ip.colors[i].reshape(1, -1), self.ip.colors, k=10)
                 self.color_neigh.append(neighbours)
 
                 # Calculating k-NN of image i according to gradient feature
-                neighbours, _ = self.k_neighbours(self.grads_matrix[i].reshape(1, -1), self.grads_matrix, k=10)
+                neighbours, _ = self.k_neighbours(self.ip.grads[i].reshape(1, -1), self.ip.grads, k=10)
                 self.grads_neigh.append(neighbours)
 
                 # Calculating k-NN of image i according to vgg16_block1 feature
-                neighbours, _ = self.k_neighbours(self.vgg16_block1_matrix[i].reshape(1, -1), self.vgg16_block1_matrix,
+                neighbours, _ = self.k_neighbours(self.ip.vgg_block1[i].reshape(1, -1), self.ip.vgg_block1,
                                                   k=10)
                 self.vgg16_block1_neigh.append(neighbours)
 
                 # Calculating k-NN of image i according to vgg16_block2 feature
-                neighbours, _ = self.k_neighbours(self.vgg16_block2_matrix[i].reshape(1, -1), self.vgg16_block2_matrix,
+                neighbours, _ = self.k_neighbours(self.ip.vgg_block2[i].reshape(1, -1), self.ip.vgg_block2,
                                                   k=10)
                 self.vgg16_block2_neigh.append(neighbours)
 
                 # Calculating k-NN of image i according to vgg16_block3 feature
-                neighbours, _ = self.k_neighbours(self.vgg16_block3_matrix[i].reshape(1, -1), self.vgg16_block3_matrix,
+                neighbours, _ = self.k_neighbours(self.ip.vgg_block3[i].reshape(1, -1), self.ip.vgg_block3,
                                                   k=10)
                 self.vgg16_block3_neigh.append(neighbours)
 

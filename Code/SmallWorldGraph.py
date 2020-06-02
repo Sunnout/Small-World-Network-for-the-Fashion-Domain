@@ -33,7 +33,6 @@ class SmallWorldGraph:
         """ Creates a graph with the images as nodes and the edges created according
          to the distance matrix that was previously calculated and stored. """
 
-        self.image_names = dm.get_img_names()
         self.sc = SimilarityCalculator(update)
         self.graph = nx.Graph()
 
@@ -45,14 +44,14 @@ class SmallWorldGraph:
         for i in range(0, num_imgs):
             self.add_kneighbours(i, k=5)
            #for j in range(i + 1, num_imgs):
-                #self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
+                #self.graph.add_edge((i, self.sc.dm.image_names[i]), (j, self.sc.dm.image_names[j]), distance=self.dist_matrix[i, j])
 
 
     def add_kneighbours(self, node, k=10):
         sorted_idx = np.argsort(self.dist_matrix[node])
         for j in sorted_idx[1:k+1]:
-            if not self.graph.has_edge((j, self.image_names[j]), (node, self.image_names[node])) :
-                self.graph.add_edge((node, self.image_names[node]), (j, self.image_names[j]), distance=self.dist_matrix[node, j])
+            if not self.graph.has_edge((j, self.sc.dm.image_names[j]), (node, self.sc.dm.image_names[node])) :
+                self.graph.add_edge((node, self.sc.dm.image_names[node]), (j, self.sc.dm.image_names[j]), distance=self.dist_matrix[node, j])
 
 
 
