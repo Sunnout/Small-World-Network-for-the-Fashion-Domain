@@ -8,7 +8,6 @@ from DataManager import DataManager as dm
 from ImageProcessor import ImageProcessor as ip
 from SimilarityCalculator import SimilarityCalculator
 
-
 # Directory where we save the images created
 RESULTS_DIR = "../Results/"
 # Directory where we save the output files
@@ -84,7 +83,7 @@ class SmallWorldGraph:
          on a given graph (graph). Saves it with a given name (graph_name). The images
          are given as tuples of (index, image_name), like so: (0, "img_00000000.jpg"). """
 
-        pos = nx.kamada_kawai_layout(graph)  # ACHO QUE AQUI ESTA O ERRADO!!!!!!!!!!!
+        pos = nx.circular_layout(graph)
         fig = plt.figure(figsize=(25, 20))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
@@ -165,3 +164,45 @@ class SmallWorldGraph:
          of a given network to an equivalent random network with same degree. """
 
         return nx.omega(self.color_graph)
+
+    @staticmethod
+    def print_metrics(graph):
+        node_count= len(list(graph.nodes))
+        edge_count = 0
+
+        # Calculate the average distance of each edge in the graph
+        avg_edge_dist = 0.0
+        for (u, v, d) in graph.edges.data('distance', default=1.0):
+            avg_edge_dist += d
+            edge_count += 1
+        avg_edge_dist = avg_edge_dist / edge_count
+
+        # Calculate the average edges per node and the average shortest path
+        avg_edge_count = 0.0
+        avg_shortest_path_size = 0.0
+        for node in graph:
+            avg_edge_count = len(list(graph.edges(node)))
+            for node2 in graph:
+                if node[0] != node2[0]:
+                    path = nx.shortest_path(graph, node, node2, weight="distance")
+                    avg_shortest_path_size += len(list(path))
+
+        avg_edge_count = avg_edge_count / node_count
+        avg_shortest_path_size = avg_shortest_path_size / ((node_count*(node_count-1))/2)
+
+        # Calculate the additional metrics like sigma, omega and the clustering coefficient
+        sigma = nx.sigma(graph)
+        omega = nx.omega(graph)
+        clustering_coefficient = nx.average_clustering(graph)
+
+        print("---------- ------ Metrics ------ ----------")
+        print("Node Count: \t\t\t\t" + str(node_count))
+        print("Edge Count: \t\t\t\t" + str(edge_count))
+        print("---------- ---------- ---------- ----------")
+        print("Average Edge Count: \t\t" + str(avg_edge_count))
+        print("Average Edge Distance: \t" + str(avg_edge_dist))
+        print("Average Shortest Path: \t" + str(avg_shortest_path_size))
+        print("---------- ---------- ---------- ----------")
+        print("Sigma: \t\t\t\t" + str(sigma))
+        print("Omega: \t\t\t\t" + str(omega))
+        print("Clustering Coefficient: \t" + str(clustering_coefficient))
