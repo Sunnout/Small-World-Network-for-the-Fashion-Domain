@@ -43,8 +43,18 @@ class SmallWorldGraph:
         num_imgs = dm.get_num_imgs(self)
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)
         for i in range(0, num_imgs):
-            for j in range(i + 1, num_imgs):
-                self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
+            self.add_kneighbours(i, k=5)
+           #for j in range(i + 1, num_imgs):
+                #self.graph.add_edge((i, self.image_names[i]), (j, self.image_names[j]), distance=self.dist_matrix[i, j])
+
+
+    def add_kneighbours(self, node, k=10):
+        sorted_idx = np.argsort(self.dist_matrix[node])
+        for j in sorted_idx[1:k+1]:
+            if not self.graph.has_edge((j, self.image_names[j]), (node, self.image_names[node])) :
+                self.graph.add_edge((node, self.image_names[node]), (j, self.image_names[j]), distance=self.dist_matrix[node, j])
+
+
 
     @staticmethod
     def show_graph(graph, img_size=0.1, graph_name="graph.pdf"):
