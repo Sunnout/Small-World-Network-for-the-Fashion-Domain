@@ -1,3 +1,5 @@
+import os
+
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
@@ -71,6 +73,9 @@ class SmallWorldGraph:
             a.axis('off')
         ax.axis('off')
 
+        if not os.path.exists(RESULTS_DIR):
+            os.makedirs(RESULTS_DIR)
+
         plt.savefig(RESULTS_DIR + graph_name, format="pdf")
 
     @staticmethod
@@ -104,6 +109,9 @@ class SmallWorldGraph:
             a.imshow(dm.get_single_img(n[1]))
             a.axis('off')
         ax.axis('off')
+
+        if not os.path.exists(RESULTS_DIR):
+            os.makedirs(RESULTS_DIR)
 
         plt.savefig(RESULTS_DIR + graph_name, format="pdf")
 
@@ -139,6 +147,9 @@ class SmallWorldGraph:
             else:
                 plt.title("Neighbour " + str(i - 1))
             plt.axis("off")
+
+        if not os.path.exists(RESULTS_DIR):
+            os.makedirs(RESULTS_DIR)
 
         fig.savefig(RESULTS_DIR + graph_name, format="pdf")
 

@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from sklearn.preprocessing import normalize
 from skimage import img_as_ubyte
@@ -57,6 +59,10 @@ class ImageProcessor:
             self.vgg_block1 = np.array(self.vgg_block1)
             self.vgg_block2 = np.array(self.vgg_block2)
             self.vgg_block3 = np.array(self.vgg_block3)
+
+            if not os.path.exists(FILES_DIR):
+                os.makedirs(FILES_DIR)
+
             np.savez('{}.npz'.format(FILES_DIR + "hoc_matrix"), hoc=self.colors)
             np.savez('{}.npz'.format(FILES_DIR + "hog_matrix"), hog=self.grads)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_matrix"), b1=self.vgg_block1)

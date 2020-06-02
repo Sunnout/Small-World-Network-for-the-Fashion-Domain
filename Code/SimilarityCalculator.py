@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
@@ -83,6 +85,9 @@ class SimilarityCalculator:
 
                     # Saving the same values in opposite indexes because matrix is symmetric
                     self.final_matrix[j, i] = self.final_matrix[i, j]
+
+            if not os.path.exists(FILES_DIR):
+                os.makedirs(FILES_DIR)
 
             # Saving distance matrix in file
             np.savez('{}.npz'.format(FILES_DIR + "final_dist_matrix"), dist=self.final_matrix)

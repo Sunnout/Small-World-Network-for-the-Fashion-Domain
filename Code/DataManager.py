@@ -20,7 +20,10 @@ class DataManager:
         # Updates image names if update=True
         if update:
             self.image_names = self.get_img_names()
-            print(self.image_names)
+
+            if not os.path.exists(FILES_DIR):
+                os.makedirs(FILES_DIR)
+
             np.savez('{}.npz'.format(FILES_DIR + "image_names"), names=self.image_names)
         else:
             self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
