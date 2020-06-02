@@ -1,19 +1,17 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from skimage.feature import hog
+from skimage import exposure
 
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import Model
-from keras.layers import Input, Flatten, Dense
-
-from skimage.feature import hog
-from skimage import exposure
-
-from DataManager import DataManager as dm
 
 
 def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
+    """ Extracts the histogram of colours of a given image (img). """
+
     im_r = im[:, :, 0]
     im_g = im[:, :, 1]
     im_b = im[:, :, 2]
@@ -34,11 +32,31 @@ def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
 
 
 def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
+    """ Extracts histogram of oriented gradients of a given image (img). """
+
     fd, hog_image = hog(img, orientations=orientations, pixels_per_cell=pixels_per_cell, visualize=True)
     return fd
 
 
+def vgg16_layer(img, layer='block1_pool'):
+    """ Extracts the feature values for a given image (img), from a given vgg16
+      layer (layer). """
+
+    model = VGG16(weights='imagenet', include_top=True)
+    model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
+    print(model.input)
+
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+
+    features = model_layer.predict(x)
+    return features.flatten()
+
+
 def plot_hoc(hist_r, bins_r):
+    """ Plots histogram of colours. """
+
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(111)
     ax.bar(bins_r[:-1], hist_r, width=1)
@@ -49,28 +67,16 @@ def plot_hoc(hist_r, bins_r):
 
 
 def plot_hog(fd, hog_image, img):
+    """ Plots histogram of oriented gradients. """
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6), sharex=True, sharey=True)
     ax1.axis('off')
     ax1.imshow(img, cmap=plt.cm.gray)
     ax1.set_title('Input image', fontsize=20)
 
-    # Rescale histogram for better display
     hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 
     ax2.axis('off')
     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
     ax2.set_title('Histogram of Oriented Gradients', fontsize=18)
     plt.show()
-
-
-def vgg16_layer(img, layer='block1_pool'):
-    model = VGG16(weights='imagenet', include_top=True)
-    model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
-    print(model.input)
-    x = image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
-
-    features = model_layer.predict(x)
-
-    return features.flatten()
