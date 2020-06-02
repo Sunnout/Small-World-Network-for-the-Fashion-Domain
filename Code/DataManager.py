@@ -5,9 +5,9 @@ import numpy as np
 from skimage.io import imread
 
 # Directory of the image database
-DATA_DIR = "../Data/"
+DATA_DIR = "Data/"
 # Directory where we save the output files
-FILES_DIR = "../Files/"
+FILES_DIR = "Files/"
 
 
 class DataManager:

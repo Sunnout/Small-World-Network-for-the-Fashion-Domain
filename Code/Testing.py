@@ -1,4 +1,4 @@
-from SmallWorldGraph import SmallWorldGraph
+from Code.SmallWorldGraph import SmallWorldGraph
 from DataManager import DataManager as dm
 
 

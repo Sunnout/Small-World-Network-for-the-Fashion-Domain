@@ -3,13 +3,13 @@ import os
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
-from DataManager import DataManager
-from ImageProcessor import ImageProcessor
+from Code.DataManager import DataManager
+from Code.ImageProcessor import ImageProcessor
 
 # Size of the sample set use to obtain the normalization values
 SAMPLE_SET_SIZE = 10
 # Directory where we save the output files
-FILES_DIR = "../Files/"
+FILES_DIR = "Files/"
 
 
 class SimilarityCalculator:
@@ -26,6 +26,11 @@ class SimilarityCalculator:
         # Extracts the features again if update=True
         ip = ImageProcessor(update)
 
+        self.color_neigh = []
+        self.grads_neigh = []
+        self.vgg16_block1_neigh = []
+        self.vgg16_block2_neigh = []
+        self.vgg16_block3_neigh = []
         self.color_matrix = ip.colors
         self.grads_matrix = ip.grads
         self.vgg16_block1_matrix = ip.vgg_block1

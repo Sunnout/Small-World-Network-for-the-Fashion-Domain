@@ -6,12 +6,12 @@ from skimage import img_as_ubyte
 from skimage.transform import resize
 from skimage import color
 
-from DataManager import DataManager as dm
-import FeatureExtractor as fe
+from Code.DataManager import DataManager as dm
+import Code.FeatureExtractor as fe
 
 
 # Directory where we save the output files
-FILES_DIR = "../Files/"
+FILES_DIR = "Files/"
 
 
 class ImageProcessor:
@@ -20,6 +20,13 @@ class ImageProcessor:
         """ Pre-processes the images and extracts several features: color,
          gradients and features from 3 layers of vgg16. Stores those features
          in files for later use. """
+
+        self.colors = []
+        self.grads = []
+        self.vgg_block1 = []
+        self.vgg_block2 = []
+        self.vgg_block3 = []
+
 
         self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 

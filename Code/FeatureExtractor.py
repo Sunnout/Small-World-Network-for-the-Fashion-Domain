@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.layers import MaxPooling2D
 from skimage.feature import hog
 from skimage import exposure
 
@@ -7,6 +8,7 @@ from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import Model
+import tensorflow as tf
 
 
 def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
@@ -45,13 +47,20 @@ def vgg16_layer(img, layer='block1_pool'):
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
     print(model.input)
+    max_pool_2d = MaxPooling2D(pool_size=(8, 8), strides = (1, 1), padding = 'valid', data_format = 'channels_last')
 
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
 
     features = model_layer.predict(x)
-    return features.flatten()
+    pool_feat = tf.constant(features)
+    print(features.shape)
+    pool_feat = tf.reshape(pool_feat, features.shape)
+    pool_feat = max_pool_2d(pool_feat)
+    pool_feat = pool_feat.flatten()
+    print(pool_feat.shape)
+    return pool_feat
 
 
 def plot_hoc(hist_r, bins_r):
