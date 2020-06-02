@@ -9,6 +9,9 @@ from SimilarityCalculator import SimilarityCalculator
 
 # Directory where we save the images created
 RESULTS_DIR = "../Results/"
+# Directory where we save the output files
+FILES_DIR = "../Files/"
+
 
 
 class SmallWorldGraph:
@@ -35,7 +38,7 @@ class SmallWorldGraph:
         self.graph = nx.Graph()
 
         # Reading distance matrix
-        self.dist_matrix = np.load("final_dist_matrix.npz")["dist"]
+        self.dist_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
 
         num_imgs = dm.get_num_imgs(self)
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)

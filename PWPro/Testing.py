@@ -1,5 +1,5 @@
-from PWPro.SmallWorldGraph import SmallWorldGraph
-from PWPro.DataManager import DataManager as dm
+from SmallWorldGraph import SmallWorldGraph
+from DataManager import DataManager as dm
 
 
 sw = SmallWorldGraph(False)

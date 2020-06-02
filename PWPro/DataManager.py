@@ -6,6 +6,8 @@ from skimage.io import imread
 
 # Directory of the image database
 DATA_DIR = "../Data/"
+# Directory where we save the output files
+FILES_DIR = "../Files/"
 
 
 class DataManager:
@@ -19,9 +21,9 @@ class DataManager:
         if update:
             self.image_names = self.get_img_names()
             print(self.image_names)
-            np.savez('{}.npz'.format("image_names"), names=self.image_names)
+            np.savez('{}.npz'.format(FILES_DIR + "image_names"), names=self.image_names)
         else:
-            self.image_names = np.load("image_names.npz")["names"]
+            self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 
     def get_all_imgs(self):
         """ Returns all the images from the database. """

@@ -8,6 +8,10 @@ from DataManager import DataManager as dm
 import FeatureExtractor as fe
 
 
+# Directory where we save the output files
+FILES_DIR = "../Files/"
+
+
 class ImageProcessor:
 
     def __init__(self, update=False):
@@ -15,7 +19,7 @@ class ImageProcessor:
          gradients and features from 3 layers of vgg16. Stores those features
          in files for later use. """
 
-        self.image_names = np.load("image_names.npz")["names"]
+        self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 
         if update:
             for img_name in self.image_names:
@@ -51,18 +55,18 @@ class ImageProcessor:
             self.grads = np.array(self.grads)
             self.vgg_block1 = np.array(self.vgg_block1)
             self.vgg_block2 = np.array(self.vgg_block2)
-            np.savez('{}.npz'.format("hoc_matrix"), hoc=self.colors)
-            np.savez('{}.npz'.format("hog_matrix"), hog=self.grads)
-            np.savez('{}.npz'.format("vgg16_block1_matrix"), b1=self.vgg_block1)
-            np.savez('{}.npz'.format("vgg16_block2_matrix"), b1=self.vgg_block2)
+            np.savez('{}.npz'.format(FILES_DIR + "hoc_matrix"), hoc=self.colors)
+            np.savez('{}.npz'.format(FILES_DIR + "hog_matrix"), hog=self.grads)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_matrix"), b1=self.vgg_block1)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_matrix"), b1=self.vgg_block2)
             # TODO store vgg16_block3
 
         else:
             # Reading feature matrices from files
-            self.colors = np.load("hoc_matrix.npz")["hoc"]
-            self.grads = np.load("hog_matrix.npz")["hog"]
-            self.vgg_block1 = np.load("vgg16_block1_matrix.npz")["b1"]
-            self.vgg_block2 = np.load("vgg16_block2_matrix.npz")["b1"]
+            self.colors = np.load(FILES_DIR + "hoc_matrix.npz")["hoc"]
+            self.grads = np.load(FILES_DIR + "hog_matrix.npz")["hog"]
+            self.vgg_block1 = np.load(FILES_DIR + "vgg16_block1_matrix.npz")["b1"]
+            self.vgg_block2 = np.load(FILES_DIR + "vgg16_block2_matrix.npz")["b1"]
             # TODO read vgg16_block3
 
     @staticmethod

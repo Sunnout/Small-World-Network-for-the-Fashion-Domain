@@ -6,6 +6,8 @@ from ImageProcessor import ImageProcessor
 
 # Size of the sample set use to obtain the normalization values
 SAMPLE_SET_SIZE = 10
+# Directory where we save the output files
+FILES_DIR = "../Files/"
 
 
 class SimilarityCalculator:
@@ -80,18 +82,18 @@ class SimilarityCalculator:
                     self.final_matrix[j, i] = self.final_matrix[i, j]
 
             # Saving distance matrix in file
-            np.savez('{}.npz'.format("final_dist_matrix"), dist=self.final_matrix)
-            np.savez('{}.npz'.format("color_neighbours"), knn=self.color_neigh)
-            np.savez('{}.npz'.format("grads_neighbours"), knn=self.grads_neigh)
-            np.savez('{}.npz'.format("vgg16_block1_neighbours"), knn=self.vgg16_block1_neigh)
-            np.savez('{}.npz'.format("vgg16_block2_neighbours"), knn=self.vgg16_block2_neigh)
+            np.savez('{}.npz'.format(FILES_DIR + "final_dist_matrix"), dist=self.final_matrix)
+            np.savez('{}.npz'.format(FILES_DIR + "color_neighbours"), knn=self.color_neigh)
+            np.savez('{}.npz'.format(FILES_DIR + "grads_neighbours"), knn=self.grads_neigh)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_neighbours"), knn=self.vgg16_block1_neigh)
+            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_neighbours"), knn=self.vgg16_block2_neigh)
         else:
             # Reading distance matrix from file
-            self.final_matrix = np.load("final_dist_matrix.npz")["dist"]
-            self.color_neigh = np.load("color_neighbours.npz")["knn"]
-            self.grads_neigh = np.load("grads_neighbours.npz")["knn"]
-            self.vgg16_block1_neigh = np.load("vgg16_block1_neighbours.npz")["knn"]
-            self.vgg16_block2_neigh = np.load("vgg16_block2_neighbours.npz")["knn"]
+            self.final_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
+            self.color_neigh = np.load(FILES_DIR + "color_neighbours.npz")["knn"]
+            self.grads_neigh = np.load(FILES_DIR + "grads_neighbours.npz")["knn"]
+            self.vgg16_block1_neigh = np.load(FILES_DIR + "vgg16_block1_neighbours.npz")["knn"]
+            self.vgg16_block2_neigh = np.load(FILES_DIR + "vgg16_block2_neighbours.npz")["knn"]
 
     @staticmethod
     def k_neighbours(query, matrix, metric="euclidean", k=10):
