@@ -9,7 +9,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import Model
 import tensorflow as tf
-from tensorflow_core.python import Session
 
 
 def hoc(im, bins=(4, 4, 4), hist_range=(256, 256, 256)):
@@ -47,7 +46,8 @@ def vgg16_layer(img, layer='block1_pool'):
     tf.keras.backend.clear_session()
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
-    print(model.input)
+    print(model_layer.input)
+    print(model_layer.summary())
     max_pool_2d = MaxPooling2D(pool_size=(8, 8), strides = (1, 1), padding = 'valid', data_format = 'channels_last')
 
     x = image.img_to_array(img)
@@ -62,8 +62,8 @@ def vgg16_layer(img, layer='block1_pool'):
         pool_feat = tf.reshape(pool_feat, features.shape)
         pool_feat = max_pool_2d(pool_feat)
 
-        pool_feat = pool_feat.eval(session=sess).flatten()
-    print(pool_feat.shape)'''
+        pool_feat = pool_feat.eval(session=sess).flatten()'''
+    #print(features.shape)
     return features.flatten()
 
 

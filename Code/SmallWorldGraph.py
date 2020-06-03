@@ -39,7 +39,7 @@ class SmallWorldGraph:
         # Reading distance matrix
         self.dist_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
 
-        num_imgs = dm.get_num_imgs(self)
+        num_imgs = len(dm.get_img_names())
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)
         for i in range(0, num_imgs):
             self.add_kneighbours(i, k=5)

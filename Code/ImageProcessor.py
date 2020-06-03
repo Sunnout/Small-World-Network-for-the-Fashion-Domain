@@ -31,49 +31,43 @@ class ImageProcessor:
         self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 
         if update:
-            for img_name in self.image_names:
-                img = dm.get_single_img(img_name)
-
-                # Extracting HoC
-                img = self.center_crop_image(img, size=224)
-                img_hsv = color.rgb2hsv(img)
-                img_int = img_as_ubyte(img_hsv)
-                color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
-                color_feat = np.squeeze(normalize(color_hist.reshape(1, -1), norm="l2"))
-                self.colors.append(color_feat)
-
-                # Extracting HoG
-                img_gray = color.rgb2gray(img)
-                grad_hist = fe.my_hog(img_gray, orientations=8, pixels_per_cell=(32, 32))
-                grad_feat = np.squeeze(normalize(grad_hist.reshape(1, -1), norm="l2"))
-                self.grads.append(grad_feat)
-
-                # Extracting VGG16_block1
-                vgg16 = fe.vgg16_layer(img, layer= "block1_pool")
-                self.vgg_block1.append(vgg16)
-
-                # Extracting VGG16_block2
-                vgg16 = fe.vgg16_layer(img, layer='block2_pool')
-                self.vgg_block2.append(vgg16)
-
-                # Extracting VGG16_block3
-                vgg16 = fe.vgg16_layer(img, layer='block3_pool')
-                self.vgg_block3.append(vgg16)
-
-            # Saving feature matrices in files
-            self.colors = np.array(self.colors)
-            self.grads = np.array(self.grads)
-            self.vgg_block1 = np.array(self.vgg_block1)
-            self.vgg_block2 = np.array(self.vgg_block2)
-            self.vgg_block3 = np.array(self.vgg_block3)
-
             if not os.path.exists(FILES_DIR):
                 os.makedirs(FILES_DIR)
 
+
+            # Extracting HoC
+            for img_name in self.image_names:
+                self.colors.append(self.extract_img_hoc(img_name))
+
+            self.colors = np.array(self.colors)
             np.savez('{}.npz'.format(FILES_DIR + "hoc_matrix"), hoc=self.colors)
+
+            # Extracting HoG
+            for img_name in self.image_names:
+                self.grads.append(self.extract_img_hog(img_name))
+
+            self.grads = np.array(self.grads)
             np.savez('{}.npz'.format(FILES_DIR + "hog_matrix"), hog=self.grads)
+
+            # Extracting VGG16_block1
+            for img_name in self.image_names:
+                self.vgg_block1.append(self.extract_img_vggblock(img_name, "block1_pool"))
+
+            self.vgg_block1 = np.array(self.vgg_block1)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_matrix"), b1=self.vgg_block1)
+
+            # Extracting VGG16_block2
+            for img_name in self.image_names:
+                self.vgg_block2.append(self.extract_img_vggblock(img_name, "block2_pool"))
+
+            self.vgg_block2 = np.array(self.vgg_block2)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_matrix"), b2=self.vgg_block2)
+
+            # Extracting VGG16_block3
+            for img_name in self.image_names:
+                self.vgg_block3.append(self.extract_img_vggblock(img_name, "block3_pool"))
+
+            self.vgg_block3 = np.array(self.vgg_block3)
             np.savez('{}.npz'.format(FILES_DIR + "vgg16_block3_matrix"), b3=self.vgg_block3)
 
         else:
@@ -83,6 +77,40 @@ class ImageProcessor:
             self.vgg_block1 = np.load(FILES_DIR + "vgg16_block1_matrix.npz")["b1"]
             self.vgg_block2 = np.load(FILES_DIR + "vgg16_block2_matrix.npz")["b2"] # Mudar para b2 quando correr com True outra vez
             self.vgg_block3 = np.load(FILES_DIR + "vgg16_block3_matrix.npz")["b3"]
+
+    def extract_img_hoc(self, img_name):
+        img = dm.get_single_img(img_name)
+        img = self.center_crop_image(img, size=224)
+        img_hsv = color.rgb2hsv(img)
+        img_int = img_as_ubyte(img_hsv)
+
+        color_hist, bins = fe.hoc(img_int, bins=(4, 4, 4))
+        color_feat = np.squeeze(normalize(color_hist.reshape(1, -1), norm="l2"))
+        return color_feat
+
+    def extract_img_hog(self, img_name):
+        img = dm.get_single_img(img_name)
+        img = self.center_crop_image(img, size=224)
+        img_gray = color.rgb2gray(img)
+
+        grad_hist = fe.my_hog(img_gray, orientations=8, pixels_per_cell=(32, 32))
+        grad_feat = np.squeeze(normalize(grad_hist.reshape(1, -1), norm="l2"))
+        return grad_feat
+
+    def extract_img_vggblock(self, img_name, block_name):
+        img = dm.get_single_img(img_name)
+        img = self.center_crop_image(img, size=224)
+
+        vgg16 = fe.vgg16_layer(img, layer=block_name)
+        return vgg16
+
+    def extract_feature(self, img_names, npz_name, function):
+        features = []
+        for img_name in img_names:
+            features.append(function(img_name))
+
+        features = np.array(features)
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), feature=features)
 
     @staticmethod
     def center_crop_image(im, size=224):

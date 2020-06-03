@@ -28,6 +28,8 @@ class SimilarityCalculator:
 
         self.color_neigh = []
         self.grads_neigh = []
+        self.color_matrix = []
+        self.grads_matrix = []
         self.vgg16_block1_neigh = []
         self.vgg16_block2_neigh = []
         self.vgg16_block3_neigh = []
@@ -63,15 +65,15 @@ class SimilarityCalculator:
 
                 for j in range(i + 1, num_imgs):
                     # Calculating color distances, normalizing and adding them to the final matrix
-                    dist = pairwise_distances(self.color_matrix[i].reshape(1, -1), self.color_matrix[j].reshape(1, -1),
+                    dist = pairwise_distances(self.ip.colors[i].reshape(1, -1), self.ip.colors[j].reshape(1, -1),
                                               metric="euclidean")
-                    norm_dist = np.squeeze(dist/color_normalizer)
+                    norm_dist = np.squeeze(dist / color_normalizer)
                     self.final_matrix[i, j] += norm_dist
 
                     # Calculating gradient distances, normalizing and adding them to the final matrix
-                    dist = pairwise_distances(self.grads_matrix[i].reshape(1, -1), self.grads_matrix[j].reshape(1, -1),
+                    dist = pairwise_distances(self.ip.grads[i].reshape(1, -1), self.ip.grads[j].reshape(1, -1),
                                               metric="euclidean")
-                    norm_dist = np.squeeze(dist/grad_normalizer)
+                    norm_dist = np.squeeze(dist / grad_normalizer)
                     self.final_matrix[i, j] += norm_dist
 
                     # Calculating vgg16_block1 distances, normalizing and adding them to the final matrix
@@ -129,14 +131,14 @@ class SimilarityCalculator:
         for img1 in imgs:
             for img2 in imgs:
                 if img1 != img2:
-                    d = pairwise_distances(self.color_matrix[img1].reshape(1, -1),
-                                           self.color_matrix[img2].reshape(1, -1),
+                    d = pairwise_distances(self.ip.colors[img1].reshape(1, -1),
+                                           self.ip.colors[img2].reshape(1, -1),
                                            metric=metric)
                     if d > max_dist_color:
                         max_dist_color = d
 
-                    d = pairwise_distances(self.grads_matrix[img1].reshape(1, -1),
-                                           self.grads_matrix[img2].reshape(1, -1),
+                    d = pairwise_distances(self.ip.grads[img1].reshape(1, -1),
+                                           self.ip.grads[img2].reshape(1, -1),
                                            metric=metric)
                     if d > max_dist_grad:
                         max_dist_grad = d
@@ -158,12 +160,12 @@ class SimilarityCalculator:
         for img1 in imgs:
             for img2 in imgs:
                 if img1 != img2:
-                    sum_dist_color += pairwise_distances(self.color_matrix[img1].reshape(1, -1),
-                                                         self.color_matrix[img2].reshape(1, -1),
+                    sum_dist_color += pairwise_distances(self.ip.colors[img1].reshape(1, -1),
+                                                         self.ip.colors[img2].reshape(1, -1),
                                                          metric=metric)
 
-                    sum_dist_grad += pairwise_distances(self.grads_matrix[img1].reshape(1, -1),
-                                                        self.grads_matrix[img2].reshape(1, -1),
+                    sum_dist_grad += pairwise_distances(self.ip.grads[img1].reshape(1, -1),
+                                                        self.ip.grads[img2].reshape(1, -1),
                                                         metric=metric)
 
                     # TODO vgg16 features sum distances
