@@ -26,7 +26,6 @@ class ImageProcessor:
         self.vgg_block2 = []
         self.vgg_block3 = []
 
-
         image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 
         if update:
@@ -58,7 +57,7 @@ class ImageProcessor:
 
     def extract_img_hoc(self, img_name):
         img = dm.get_single_img(img_name)
-        img = self.center_crop_image(img, size=224)
+        img = center_crop_image(img, size=224)
         img_hsv = color.rgb2hsv(img)
         img_int = img_as_ubyte(img_hsv)
 
@@ -68,7 +67,7 @@ class ImageProcessor:
 
     def extract_img_hog(self, img_name):
         img = dm.get_single_img(img_name)
-        img = self.center_crop_image(img, size=224)
+        img = center_crop_image(img, size=224)
         img_gray = color.rgb2gray(img)
 
         grad_hist = fe.my_hog(img_gray, orientations=8, pixels_per_cell=(32, 32))
@@ -77,7 +76,7 @@ class ImageProcessor:
 
     def extract_img_vggblock(self, img_name, layer_name):
         img = dm.get_single_img(img_name)
-        img = self.center_crop_image(img, size=224)
+        img = center_crop_image(img, size=224)
 
         vgg16 = fe.vgg16_layer(img, layer=layer_name)
         return vgg16
@@ -98,27 +97,28 @@ class ImageProcessor:
         features = np.array(features)
         np.savez('{}.npz'.format(FILES_DIR + npz_name), features=features)
 
-    @staticmethod
-    def load_feature(npz_name):
-        return np.load(FILES_DIR + npz_name)[STD_COLUMN]
 
-    @staticmethod
-    def center_crop_image(im, size=224):
-        """ Removes the alpha channel from an images (img), centers it and crops
-         it to a size of 224x224. Returns the processed image. """
+def load_feature(npz_name):
+    return np.load(FILES_DIR + npz_name)[STD_COLUMN]
 
-        if im.shape[2] == 4:  # Remove the alpha channel
-            im = im[:, :, 0:3]
 
-        # Resize so smallest dim = 224, preserving aspect ratio
-        h, w, _ = im.shape
-        if h < w:
-            im = resize(image=im, output_shape=(size, int(w * size / h)))
-        else:
-            im = resize(im, (int(h * size / w), size))
+def center_crop_image(im, size=224):
+    """ Removes the alpha channel from an images (img), centers it and crops
+     it to a size of 224x224. Returns the processed image. """
 
-        # Center crop to 224x224
-        h, w, _ = im.shape
-        im = im[h // 2 - 112:h // 2 + 112, w // 2 - 112:w // 2 + 112]
+    if im.shape[2] == 4:  # Remove the alpha channel
+        im = im[:, :, 0:3]
 
-        return im
+    # Resize so smallest dim = 224, preserving aspect ratio
+    h, w, _ = im.shape
+    if h < w:
+        im = resize(image=im, output_shape=(size, int(w * size / h)))
+    else:
+        im = resize(im, (int(h * size / w), size))
+
+    # Center crop to 224x224
+    h, w, _ = im.shape
+    im = im[h // 2 - 112:h // 2 + 112, w // 2 - 112:w // 2 + 112]
+
+    return im
+

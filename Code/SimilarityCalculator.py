@@ -3,13 +3,9 @@ import os
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
+from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE
 from Code.DataManager import DataManager
 from Code.ImageProcessor import ImageProcessor
-
-# Size of the sample set use to obtain the normalization values
-SAMPLE_SET_SIZE = 10
-# Directory where we save the output files
-FILES_DIR = "Files/"
 
 
 class SimilarityCalculator:

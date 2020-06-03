@@ -7,6 +7,9 @@ RESULTS_DIR = "Results/"
 # Directory of the image database
 DATA_DIR = "Data/"
 
+# Size of the sample set use to obtain the normalization values
+SAMPLE_SET_SIZE = 10
+
 # Standard name use for the column when writing files
 # WARNING: When changing this make sure to change the np.savez statements as well
 STD_COLUMN = "features"
