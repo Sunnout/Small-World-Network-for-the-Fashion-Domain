@@ -33,10 +33,10 @@ class SimilarityCalculator:
                 os.makedirs(FILES_DIR)
 
             # Calculating k-NN of every image according to color feature
-            self.calculate_feature_distances(num_imgs, color_normalizer, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
+            self.calculate_feature_distances(num_imgs, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
 
             # Calculating k-NN of every image according to gradient feature
-            self.calculate_feature_distances(num_imgs, grad_normalizer, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
+            self.calculate_feature_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
 
             # Calculating k-NN of image i according to vgg16_block1 feature
             self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK1_MATRIX_FILE), VGG_BLOCK1_NEIGH_FILE)
@@ -64,7 +64,8 @@ class SimilarityCalculator:
             # Save the calculated distances to an npz file
             np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), knn=self.final_matrix)
 
-    def calculate_feature_distances(self, num_imgs, normalizer, features_matrix, npz_name):
+    def calculate_feature_distances(self, num_imgs, features_matrix, npz_name):
+        normalizer = self.calc_sum_distances(self.dm, features_matrix)
         feature_neigh = []
         for i in range(0, num_imgs):
             # Calculating k-NN of image i according to the feature
@@ -101,7 +102,7 @@ class SimilarityCalculator:
         sorted_indexes = np.argsort(dists)
         return sorted_indexes[:k], dists[sorted_indexes[:k]]
 
-    def calc_max_distances(self, dm, metric="euclidean"):
+    def calc_max_distances(self, dm, feat_matrix, metric="euclidean"):
         """ Gets a sample of size SAMPLE_SET_SIZE from the image database. Calculates the
          pairwise distance according to all the features, over all the images, and saves
          the maximum distances. Returns these maximum distances, that can then be used to
@@ -109,28 +110,21 @@ class SimilarityCalculator:
 
         imgs = dm.get_rand_set(SAMPLE_SET_SIZE)
 
-        max_dist_color = -1
-        max_dist_grad = -1
+        max_dist = -1
         for img1 in imgs:
             for img2 in imgs:
                 if img1 != img2:
-                    d = pairwise_distances(self.ip.colors[img1].reshape(1, -1),
-                                           self.ip.colors[img2].reshape(1, -1),
+                    d = pairwise_distances(feat_matrix[img1].reshape(1, -1),
+                                           feat_matrix[img2].reshape(1, -1),
                                            metric=metric)
-                    if d > max_dist_color:
-                        max_dist_color = d
-
-                    d = pairwise_distances(self.ip.grads[img1].reshape(1, -1),
-                                           self.ip.grads[img2].reshape(1, -1),
-                                           metric=metric)
-                    if d > max_dist_grad:
-                        max_dist_grad = d
+                    if d > max_dist:
+                        max_dist = d
 
                     # TODO vgg16 features max distances
 
-        return max_dist_color, max_dist_grad
+        return max_dist
 
-    def calc_sum_distances(self, dm, metric="euclidean"):
+    def calc_sum_distances(self, dm, feat_matrix, metric="euclidean"):
         """ Gets a sample of size SAMPLE_SET_SIZE from the image database. Calculates the
          pairwise distance according to all the features, over all the images, and sums
          those distances. Returns these distance sums, that can then be used to normalize
@@ -138,22 +132,17 @@ class SimilarityCalculator:
 
         imgs = dm.get_rand_set(SAMPLE_SET_SIZE)
 
-        sum_dist_color = 0
-        sum_dist_grad = 0
+        sum_dist = 0
         for img1 in imgs:
             for img2 in imgs:
                 if img1 != img2:
-                    sum_dist_color += pairwise_distances(self.ip.colors[img1].reshape(1, -1),
-                                                         self.ip.colors[img2].reshape(1, -1),
+                    sum_dist += pairwise_distances(feat_matrix[img1].reshape(1, -1),
+                                                         feat_matrix[img2].reshape(1, -1),
                                                          metric=metric)
-
-                    sum_dist_grad += pairwise_distances(self.ip.grads[img1].reshape(1, -1),
-                                                        self.ip.grads[img2].reshape(1, -1),
-                                                        metric=metric)
 
                     # TODO vgg16 features sum distances
 
-        return sum_dist_color, sum_dist_grad
+        return sum_dist
 
 
 def load_neigh(npz_name):
