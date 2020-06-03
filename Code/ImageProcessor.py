@@ -99,7 +99,7 @@ class ImageProcessor:
 
 
 def load_feature(npz_name):
-    return np.load(FILES_DIR + npz_name)[STD_COLUMN]
+    return np.load(FILES_DIR + npz_name, mmap_mode="r")[STD_COLUMN]
 
 
 def center_crop_image(im, size=224):
