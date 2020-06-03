@@ -4,14 +4,11 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
+from Code.Constants import FILES_DIR, RESULTS_DIR
 from Code.DataManager import DataManager as dm
 from Code.ImageProcessor import ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator
 
-# Directory where we save the images created
-RESULTS_DIR = "Results/"
-# Directory where we save the output files
-FILES_DIR = "Files/"
 
 
 class SmallWorldGraph:

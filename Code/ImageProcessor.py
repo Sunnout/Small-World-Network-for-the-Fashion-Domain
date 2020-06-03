@@ -1,6 +1,9 @@
 import os
 
 import numpy as np
+
+from Code.Constants import FILES_DIR, HOC_MATRIX_FILE, HOG_MATRIX_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK2_MATRIX_FILE, \
+    VGG_BLOCK3_MATRIX_FILE, STD_COLUMN
 from sklearn.preprocessing import normalize
 from skimage import img_as_ubyte
 from skimage.transform import resize
@@ -8,10 +11,6 @@ from skimage import color
 
 from Code.DataManager import DataManager as dm
 import Code.FeatureExtractor as fe
-
-
-# Directory where we save the output files
-FILES_DIR = "Files/"
 
 
 class ImageProcessor:
@@ -35,27 +34,27 @@ class ImageProcessor:
                 os.makedirs(FILES_DIR)
 
             # Extracting HoC
-            self.extract_feature(image_names, "hoc_matrix", self.extract_img_hoc)
+            self.extract_feature(image_names, HOC_MATRIX_FILE, self.extract_img_hoc)
 
             # Extracting HoG
-            self.extract_feature(image_names, "hog_matrix", self.extract_img_hog)
+            self.extract_feature(image_names, HOG_MATRIX_FILE, self.extract_img_hog)
 
             # Extracting VGG16_block1
-            self.extract_vgg_feature(image_names, "vgg16_block1_matrix", "block1_pool")
+            self.extract_vgg_feature(image_names, VGG_BLOCK1_MATRIX_FILE, "block1_pool")
 
             # Extracting VGG16_block2
-            self.extract_vgg_feature(image_names, "vgg16_block2_matrix", "block2_pool")
+            self.extract_vgg_feature(image_names, VGG_BLOCK2_MATRIX_FILE, "block2_pool")
 
             # Extracting VGG16_block3
-            self.extract_vgg_feature(image_names, "vgg16_block3_matrix", "block3_pool")
+            self.extract_vgg_feature(image_names, VGG_BLOCK3_MATRIX_FILE, "block3_pool")
 
         else:
             # Reading feature matrices from files
-            self.colors = np.load(FILES_DIR + "hoc_matrix.npz")["hoc"]
-            self.grads = np.load(FILES_DIR + "hog_matrix.npz")["hog"]
-            self.vgg_block1 = np.load(FILES_DIR + "vgg16_block1_matrix.npz")["b1"]
-            self.vgg_block2 = np.load(FILES_DIR + "vgg16_block2_matrix.npz")["b2"] # Mudar para b2 quando correr com True outra vez
-            self.vgg_block3 = np.load(FILES_DIR + "vgg16_block3_matrix.npz")["b3"]
+            self.colors = np.load(FILES_DIR + HOC_MATRIX_FILE)[STD_COLUMN]
+            self.grads = np.load(FILES_DIR + HOG_MATRIX_FILE)[STD_COLUMN]
+            self.vgg_block1 = np.load(FILES_DIR + VGG_BLOCK1_MATRIX_FILE)[STD_COLUMN]
+            self.vgg_block2 = np.load(FILES_DIR + VGG_BLOCK2_MATRIX_FILE)[STD_COLUMN]
+            self.vgg_block3 = np.load(FILES_DIR + VGG_BLOCK3_MATRIX_FILE)[STD_COLUMN]
 
     def extract_img_hoc(self, img_name):
         img = dm.get_single_img(img_name)
@@ -97,11 +96,11 @@ class ImageProcessor:
             features.append(self.extract_img_vggblock(img_name, layer_name))
 
         features = np.array(features)
-        np.savez('{}.npz'.format(FILES_DIR + npz_name), feature=features)
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), features=features)
 
     @staticmethod
     def load_feature(npz_name):
-        return np.load(FILES_DIR + npz_name + ".npz")["features"]
+        return np.load(FILES_DIR + npz_name)[STD_COLUMN]
 
     @staticmethod
     def center_crop_image(im, size=224):

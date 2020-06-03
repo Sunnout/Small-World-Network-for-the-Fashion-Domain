@@ -4,10 +4,7 @@ import random
 import numpy as np
 from skimage.io import imread
 
-# Directory of the image database
-DATA_DIR = "Data/"
-# Directory where we save the output files
-FILES_DIR = "Files/"
+from Code.Constants import FILES_DIR, DATA_DIR
 
 
 class DataManager:
