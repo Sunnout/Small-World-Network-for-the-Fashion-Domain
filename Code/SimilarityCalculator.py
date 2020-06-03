@@ -5,7 +5,7 @@ from sklearn.metrics import pairwise_distances
 
 from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE, HOC_MATRIX_FILE, HOG_MATRIX_FILE, COLOR_NEIGH_FILE, \
     GRADS_NEIGH_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_MATRIX_FILE, VGG_BLOCK2_NEIGH_FILE, \
-    VGG_BLOCK3_MATRIX_FILE, VGG_BLOCK3_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN
+    VGG_BLOCK3_MATRIX_FILE, VGG_BLOCK3_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN, NPZ_EXTENSION
 from Code.DataManager import DataManager
 from Code.ImageProcessor import ImageProcessor, load_feature
 
@@ -25,7 +25,6 @@ class SimilarityCalculator:
         self.ip = ImageProcessor(update)
 
         if update:
-            color_normalizer, grad_normalizer = self.calc_sum_distances(self.dm)
             num_imgs = self.dm.get_num_imgs()
             self.final_matrix = np.zeros((num_imgs, num_imgs))
 
@@ -62,7 +61,7 @@ class SimilarityCalculator:
                     self.final_matrix[j, i] = self.final_matrix[i, j]
 
             # Save the calculated distances to an npz file
-            np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), knn=self.final_matrix)
+            np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), dist=self.final_matrix)
 
     def calculate_feature_distances(self, num_imgs, features_matrix, npz_name):
         normalizer = self.calc_sum_distances(self.dm, features_matrix)
@@ -147,4 +146,4 @@ class SimilarityCalculator:
 
 def load_neigh(npz_name):
     # Fetch neighbours matrix from the mentioned file
-    return np.load(FILES_DIR + npz_name, mmap_mode="r")[KNN]
+    return np.load(FILES_DIR + npz_name + NPZ_EXTENSION, mmap_mode="r")[KNN]

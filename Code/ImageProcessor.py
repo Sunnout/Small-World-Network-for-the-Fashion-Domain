@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from Code.Constants import FILES_DIR, HOC_MATRIX_FILE, HOG_MATRIX_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK2_MATRIX_FILE, \
-    VGG_BLOCK3_MATRIX_FILE, STD_COLUMN
+    VGG_BLOCK3_MATRIX_FILE, STD_COLUMN, NPZ_EXTENSION
 from sklearn.preprocessing import normalize
 from skimage import img_as_ubyte
 from skimage.transform import resize
@@ -73,7 +73,7 @@ class ImageProcessor:
             features.append(function(img_name))
 
         features = np.array(features)
-        np.savez('{}.npz'.format(FILES_DIR + npz_name), feature=features)
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), features=features)
 
     def extract_vgg_feature(self, img_names, npz_name, layer_name):
         features = []
@@ -86,7 +86,7 @@ class ImageProcessor:
 
 def load_feature(npz_name):
     # Reading feature matrices from files
-    return np.load(FILES_DIR + npz_name, mmap_mode="r")[STD_COLUMN]
+    return np.load(FILES_DIR + npz_name + NPZ_EXTENSION, mmap_mode="r")[STD_COLUMN]
 
 
 def center_crop_image(im, size=224):

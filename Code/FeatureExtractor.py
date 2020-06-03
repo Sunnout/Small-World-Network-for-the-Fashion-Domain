@@ -47,7 +47,7 @@ def vgg16_layer(img, layer='block1_pool'):
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
     print(model_layer.input)
-    print(model_layer.summary())
+    #print(model_layer.summary())
     max_pool_2d = MaxPooling2D(pool_size=(8, 8), strides = (1, 1), padding = 'valid', data_format = 'channels_last')
 
     x = image.img_to_array(img)

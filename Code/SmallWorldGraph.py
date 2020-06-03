@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE
+from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION
 from Code.DataManager import DataManager as dm
 from Code.ImageProcessor import ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator
@@ -34,7 +34,7 @@ class SmallWorldGraph:
         self.graph = nx.Graph()
 
         # Reading distance matrix
-        self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE)["dist"]
+        self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE + NPZ_EXTENSION)["dist"]
 
         num_imgs = len(dm.get_img_names())
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)
