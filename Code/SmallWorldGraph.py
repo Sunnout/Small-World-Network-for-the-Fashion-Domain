@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Code.Constants import FILES_DIR, RESULTS_DIR
+from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE
 from Code.DataManager import DataManager as dm
 from Code.ImageProcessor import ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator
@@ -34,23 +34,18 @@ class SmallWorldGraph:
         self.graph = nx.Graph()
 
         # Reading distance matrix
-        self.dist_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
+        self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE)["dist"]
 
         num_imgs = len(dm.get_img_names())
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)
         for i in range(0, num_imgs):
             self.add_kneighbours(i, k=5)
-           #for j in range(i + 1, num_imgs):
-                #self.graph.add_edge((i, self.sc.dm.image_names[i]), (j, self.sc.dm.image_names[j]), distance=self.dist_matrix[i, j])
-
 
     def add_kneighbours(self, node, k=10):
         sorted_idx = np.argsort(self.dist_matrix[node])
         for j in sorted_idx[1:k+1]:
             if not self.graph.has_edge((j, self.sc.dm.image_names[j]), (node, self.sc.dm.image_names[node])) :
                 self.graph.add_edge((node, self.sc.dm.image_names[node]), (j, self.sc.dm.image_names[j]), distance=self.dist_matrix[node, j])
-
-
 
     @staticmethod
     def show_graph(graph, img_size=0.1, graph_name="graph.pdf"):
@@ -163,13 +158,13 @@ class SmallWorldGraph:
          to an equivalent lattice network and its path length to an equivalent random
          network. """
 
-        return nx.sigma(self.color_graph)
+        return nx.sigma(self.graph)
 
     def calc_small_coefficient(self):
         """ Calculates small-coefficient: compares clustering and path length
          of a given network to an equivalent random network with same degree. """
 
-        return nx.omega(self.color_graph)
+        return nx.omega(self.graph)
 
     @staticmethod
     def print_metrics(graph):

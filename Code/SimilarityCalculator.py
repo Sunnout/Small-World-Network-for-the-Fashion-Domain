@@ -64,10 +64,6 @@ class SimilarityCalculator:
             # Save the calculated distances to an npz file
             np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), knn=self.final_matrix)
 
-        else:
-            # Reading distance matrix from file
-            self.final_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE)["dist"]
-
     def calculate_feature_distances(self, num_imgs, normalizer, features_matrix, npz_name):
         feature_neigh = []
         for i in range(0, num_imgs):
