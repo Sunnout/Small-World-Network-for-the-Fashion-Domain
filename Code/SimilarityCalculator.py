@@ -3,9 +3,11 @@ import os
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
-from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE
+from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE, HOC_MATRIX_FILE, HOG_MATRIX_FILE, COLOR_NEIGH_FILE, \
+    GRADS_NEIGH_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_MATRIX_FILE, VGG_BLOCK2_NEIGH_FILE, \
+    VGG_BLOCK3_MATRIX_FILE, VGG_BLOCK3_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN
 from Code.DataManager import DataManager
-from Code.ImageProcessor import ImageProcessor
+from Code.ImageProcessor import ImageProcessor, load_feature
 
 
 class SimilarityCalculator:
@@ -22,86 +24,75 @@ class SimilarityCalculator:
         # Extracts the features again if update=True
         self.ip = ImageProcessor(update)
 
-        self.color_neigh = []
-        self.grads_neigh = []
-        self.color_matrix = []
-        self.grads_matrix = []
-        self.vgg16_block1_neigh = []
-        self.vgg16_block2_neigh = []
-        self.vgg16_block3_neigh = []
-
         if update:
             color_normalizer, grad_normalizer = self.calc_sum_distances(self.dm)
             num_imgs = self.dm.get_num_imgs()
             self.final_matrix = np.zeros((num_imgs, num_imgs))
 
-            for i in range(0, num_imgs):
-                # Calculating k-NN of image i according to color feature
-                neighbours, _ = self.k_neighbours(self.ip.colors[i].reshape(1, -1), self.ip.colors, k=10)
-                self.color_neigh.append(neighbours)
-
-                # Calculating k-NN of image i according to gradient feature
-                neighbours, _ = self.k_neighbours(self.ip.grads[i].reshape(1, -1), self.ip.grads, k=10)
-                self.grads_neigh.append(neighbours)
-
-                # Calculating k-NN of image i according to vgg16_block1 feature
-                neighbours, _ = self.k_neighbours(self.ip.vgg_block1[i].reshape(1, -1), self.ip.vgg_block1,
-                                                  k=10)
-                self.vgg16_block1_neigh.append(neighbours)
-
-                # Calculating k-NN of image i according to vgg16_block2 feature
-                neighbours, _ = self.k_neighbours(self.ip.vgg_block2[i].reshape(1, -1), self.ip.vgg_block2,
-                                                  k=10)
-                self.vgg16_block2_neigh.append(neighbours)
-
-                # Calculating k-NN of image i according to vgg16_block3 feature
-                neighbours, _ = self.k_neighbours(self.ip.vgg_block3[i].reshape(1, -1), self.ip.vgg_block3,
-                                                  k=10)
-                self.vgg16_block3_neigh.append(neighbours)
-
-                for j in range(i + 1, num_imgs):
-                    # Calculating color distances, normalizing and adding them to the final matrix
-                    dist = pairwise_distances(self.ip.colors[i].reshape(1, -1), self.ip.colors[j].reshape(1, -1),
-                                              metric="euclidean")
-                    norm_dist = np.squeeze(dist / color_normalizer)
-                    self.final_matrix[i, j] += norm_dist
-
-                    # Calculating gradient distances, normalizing and adding them to the final matrix
-                    dist = pairwise_distances(self.ip.grads[i].reshape(1, -1), self.ip.grads[j].reshape(1, -1),
-                                              metric="euclidean")
-                    norm_dist = np.squeeze(dist / grad_normalizer)
-                    self.final_matrix[i, j] += norm_dist
-
-                    # Calculating vgg16_block1 distances, normalizing and adding them to the final matrix
-                    # TODO
-
-                    # Calculating vgg16_block2 distances, normalizing and adding them to the final matrix
-                    # TODO
-
-                    # Calculating vgg16_block3 distances, normalizing and adding them to the final matrix
-                    # TODO
-
-                    # Saving the same values in opposite indexes because matrix is symmetric
-                    self.final_matrix[j, i] = self.final_matrix[i, j]
-
             if not os.path.exists(FILES_DIR):
                 os.makedirs(FILES_DIR)
 
-            # Saving distance matrix in file
-            np.savez('{}.npz'.format(FILES_DIR + "final_dist_matrix"), dist=self.final_matrix)
-            np.savez('{}.npz'.format(FILES_DIR + "color_neighbours"), knn=self.color_neigh)
-            np.savez('{}.npz'.format(FILES_DIR + "grads_neighbours"), knn=self.grads_neigh)
-            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block1_neighbours"), knn=self.vgg16_block1_neigh)
-            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block2_neighbours"), knn=self.vgg16_block2_neigh)
-            np.savez('{}.npz'.format(FILES_DIR + "vgg16_block3_neighbours"), knn=self.vgg16_block3_neigh)
+            # Calculating k-NN of every image according to color feature
+            self.calculate_feature_distances(num_imgs, color_normalizer, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
+
+            # Calculating k-NN of every image according to gradient feature
+            self.calculate_feature_distances(num_imgs, grad_normalizer, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
+
+            # Calculating k-NN of image i according to vgg16_block1 feature
+            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK1_MATRIX_FILE), VGG_BLOCK1_NEIGH_FILE)
+
+            # Calculating k-NN of image i according to vgg16_block2 feature
+            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK2_MATRIX_FILE), VGG_BLOCK2_NEIGH_FILE)
+
+            # Calculating k-NN of image i according to vgg16_block3 feature
+            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK3_MATRIX_FILE), VGG_BLOCK3_NEIGH_FILE)
+
+            # Calculating vgg16_block1 distances, normalizing and adding them to the final matrix
+            # TODO
+
+            # Calculating vgg16_block2 distances, normalizing and adding them to the final matrix
+            # TODO
+
+            # Calculating vgg16_block3 distances, normalizing and adding them to the final matrix
+            # TODO
+
+            for i in range(0, num_imgs):
+                for j in range(i + 1, num_imgs):
+                    # Saving the same values in opposite indexes because matrix is symmetric
+                    self.final_matrix[j, i] = self.final_matrix[i, j]
+
+            # Save the calculated distances to an npz file
+            np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), knn=self.final_matrix)
+
         else:
             # Reading distance matrix from file
-            self.final_matrix = np.load(FILES_DIR + "final_dist_matrix.npz")["dist"]
-            self.color_neigh = np.load(FILES_DIR + "color_neighbours.npz")["knn"]
-            self.grads_neigh = np.load(FILES_DIR + "grads_neighbours.npz")["knn"]
-            self.vgg16_block1_neigh = np.load(FILES_DIR + "vgg16_block1_neighbours.npz")["knn"]
-            self.vgg16_block2_neigh = np.load(FILES_DIR + "vgg16_block2_neighbours.npz")["knn"]
-            self.vgg16_block3_neigh = np.load(FILES_DIR + "vgg16_block3_neighbours.npz")["knn"]
+            self.final_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE)["dist"]
+
+    def calculate_feature_distances(self, num_imgs, normalizer, features_matrix, npz_name):
+        feature_neigh = []
+        for i in range(0, num_imgs):
+            # Calculating k-NN of image i according to the feature
+            neighbours, _ = self.k_neighbours(features_matrix[i].reshape(1, -1), features_matrix, k=10)
+            feature_neigh.append(neighbours)
+            for j in range(i + 1, num_imgs):
+                # Calculating the distances, normalizing and adding them to the final matrix
+                dist = pairwise_distances(features_matrix[i].reshape(1, -1), features_matrix[j].reshape(1, -1),
+                                          metric="euclidean")
+                norm_dist = np.squeeze(dist / normalizer)
+                self.final_matrix[i, j] += norm_dist
+
+        # Saving distance matrix in file
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
+
+    def calculate_vgg_neighbours(self, num_imgs, vgg_block_matrix, npz_name):
+        feature_neigh = []
+        for i in range(0, num_imgs):
+            # Calculating k-NN of image i according to vgg16_blockX feature
+            neighbours, _ = self.k_neighbours(vgg_block_matrix[i].reshape(1, -1), vgg_block_matrix, k=10)
+            feature_neigh.append(neighbours)
+
+        # Saving distance matrix in file
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
 
     @staticmethod
     def k_neighbours(query, matrix, metric="euclidean", k=10):
@@ -167,3 +158,8 @@ class SimilarityCalculator:
                     # TODO vgg16 features sum distances
 
         return sum_dist_color, sum_dist_grad
+
+
+def load_neigh(npz_name):
+    # Fetch neighbours matrix from the mentioned file
+    return np.load(FILES_DIR + npz_name, mmap_mode="r")[KNN]

@@ -20,17 +20,11 @@ class ImageProcessor:
          gradients and features from 3 layers of vgg16. Stores those features
          in files for later use. """
 
-        self.colors = []
-        self.grads = []
-        self.vgg_block1 = []
-        self.vgg_block2 = []
-        self.vgg_block3 = []
-
-        image_names = np.load(FILES_DIR + "image_names.npz")["names"]
-
         if update:
             if not os.path.exists(FILES_DIR):
                 os.makedirs(FILES_DIR)
+
+            image_names = np.load(FILES_DIR + "image_names.npz")["names"]
 
             # Extracting HoC
             self.extract_feature(image_names, HOC_MATRIX_FILE, self.extract_img_hoc)
@@ -46,14 +40,6 @@ class ImageProcessor:
 
             # Extracting VGG16_block3
             self.extract_vgg_feature(image_names, VGG_BLOCK3_MATRIX_FILE, "block3_pool")
-
-        else:
-            # Reading feature matrices from files
-            self.colors = np.load(FILES_DIR + HOC_MATRIX_FILE)[STD_COLUMN]
-            self.grads = np.load(FILES_DIR + HOG_MATRIX_FILE)[STD_COLUMN]
-            self.vgg_block1 = np.load(FILES_DIR + VGG_BLOCK1_MATRIX_FILE)[STD_COLUMN]
-            self.vgg_block2 = np.load(FILES_DIR + VGG_BLOCK2_MATRIX_FILE)[STD_COLUMN]
-            self.vgg_block3 = np.load(FILES_DIR + VGG_BLOCK3_MATRIX_FILE)[STD_COLUMN]
 
     def extract_img_hoc(self, img_name):
         img = dm.get_single_img(img_name)
@@ -99,6 +85,7 @@ class ImageProcessor:
 
 
 def load_feature(npz_name):
+    # Reading feature matrices from files
     return np.load(FILES_DIR + npz_name, mmap_mode="r")[STD_COLUMN]
 
 
