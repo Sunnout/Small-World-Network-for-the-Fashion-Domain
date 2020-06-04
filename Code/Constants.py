@@ -1,11 +1,11 @@
 # Directory where we save the output files
-FILES_DIR = "Files/"
+FILES_DIR = "./Files/"
 
 # Directory where we save the images created
-RESULTS_DIR = "Results/"
+RESULTS_DIR = "./Results/"
 
 # Directory of the image database
-DATA_DIR = "Data/"
+DATA_DIR = "./Data/"
 
 # Size of the sample set use to obtain the normalization values
 SAMPLE_SET_SIZE = 10

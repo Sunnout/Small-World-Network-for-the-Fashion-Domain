@@ -57,7 +57,7 @@ class SmallWorldGraph:
          name (graph_name). """
 
         pos = nx.circular_layout(graph)
-        fig = plt.figure(figsize=(20, 20))
+        fig = plt.figure(figsize=(35, 35))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
 
