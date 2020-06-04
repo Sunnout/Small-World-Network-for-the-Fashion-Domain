@@ -32,28 +32,19 @@ class SimilarityCalculator:
                 os.makedirs(FILES_DIR)
 
             # Calculating k-NN of every image according to color feature
-            self.calculate_feature_distances(num_imgs, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
+            self.calculate_neighbours_and_distances(num_imgs, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
 
             # Calculating k-NN of every image according to gradient feature
-            self.calculate_feature_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
+            self.calculate_neighbours_and_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
 
             # Calculating k-NN of image i according to vgg16_block1 feature
-            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK1_MATRIX_FILE), VGG_BLOCK1_NEIGH_FILE)
+            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK1_MATRIX_FILE), VGG_BLOCK1_NEIGH_FILE)
 
             # Calculating k-NN of image i according to vgg16_block2 feature
-            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK2_MATRIX_FILE), VGG_BLOCK2_NEIGH_FILE)
+            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK2_MATRIX_FILE), VGG_BLOCK2_NEIGH_FILE)
 
             # Calculating k-NN of image i according to vgg16_block3 feature
-            self.calculate_vgg_neighbours(num_imgs, load_feature(VGG_BLOCK3_MATRIX_FILE), VGG_BLOCK3_NEIGH_FILE)
-
-            # Calculating vgg16_block1 distances, normalizing and adding them to the final matrix
-            # TODO
-
-            # Calculating vgg16_block2 distances, normalizing and adding them to the final matrix
-            # TODO
-
-            # Calculating vgg16_block3 distances, normalizing and adding them to the final matrix
-            # TODO
+            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK3_MATRIX_FILE), VGG_BLOCK3_NEIGH_FILE)
 
             for i in range(0, num_imgs):
                 for j in range(i + 1, num_imgs):
@@ -63,35 +54,28 @@ class SimilarityCalculator:
             # Save the final distances to a file
             np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), dist=self.final_matrix)
 
-    def calculate_feature_distances(self, num_imgs, features_matrix, npz_name):
-        normalizer = self.calc_sum_distances(self.dm, features_matrix)
+    def calculate_neighbours_and_distances(self, num_imgs, feat_matrix, npz_name):
+        """ Computes the k-NN of all the images according to a given feature matrix
+         (feat_matrix) and stores them in a file with a given name (npz_name). Computes
+         the pairwise distances over all images, according to the feature matrix. Then,
+         normalizes those distances and sums them to the corresponding indexes of the
+         final similarity matrix. """
+
+        normalizer = self.calc_sum_distances(self.dm, feat_matrix)
+
         feature_neigh = []
         for i in range(0, num_imgs):
             # Calculating k-NN of image i according to a feature
-            neighbours, _ = self.k_neighbours(features_matrix[i].reshape(1, -1), features_matrix, k=N_NEIGHBOURS)
+            neighbours, _ = self.k_neighbours(feat_matrix[i].reshape(1, -1), feat_matrix, k=N_NEIGHBOURS)
             feature_neigh.append(neighbours)
             for j in range(i + 1, num_imgs):
-                # Calculating the distances, normalizing and adding them to the final matrix
-                dist = pairwise_distances(features_matrix[i].reshape(1, -1), features_matrix[j].reshape(1, -1),
+                # Calculating the distances, normalizing and adding them to the final similarity matrix
+                dist = pairwise_distances(feat_matrix[i].reshape(1, -1), feat_matrix[j].reshape(1, -1),
                                           metric="euclidean")
                 norm_dist = np.squeeze(dist / normalizer)
                 self.final_matrix[i, j] += norm_dist
 
-        # Saving distance matrix in file
-        np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
-
-    # Esta funcao acho que podia ser incluida na de cima
-    def calculate_vgg_neighbours(self, num_imgs, vgg_block_matrix, npz_name):
-        """ Calculates the k-NN of all the images in the database according to a feature
-         and stores their indexes in a matrix. """
-
-        feature_neigh = []
-        for i in range(0, num_imgs):
-            # Calculating k-NN of image i according to vgg16_blockX feature
-            neighbours, _ = self.k_neighbours(vgg_block_matrix[i].reshape(1, -1), vgg_block_matrix, k=N_NEIGHBOURS)
-            feature_neigh.append(neighbours)
-
-        # Saving distance matrix in file
+        # Saving neighbours matrix in file
         np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
 
     @staticmethod
@@ -108,9 +92,9 @@ class SimilarityCalculator:
     @staticmethod
     def calc_max_distances(dm, feat_matrix, metric="euclidean"):
         """ Gets a sample of size SAMPLE_SET_SIZE from the image database. Calculates the
-         pairwise distance according to all the features, over all the images, and saves
-         the maximum distances. Returns these maximum distances, that can then be used to
-         normalize the distances calculated over the whole database. """
+         pairwise distance over all images according to the given feature matrix (feat_matrix).
+         Saves the maximum distance and returns it, so that it can then be used to normalize
+         the distances calculated later over the whole database. """
 
         imgs = dm.get_rand_set(SAMPLE_SET_SIZE)
 
@@ -124,16 +108,14 @@ class SimilarityCalculator:
                     if d > max_dist:
                         max_dist = d
 
-                    # TODO vgg16 features max distances
-
         return max_dist
 
     @staticmethod
     def calc_sum_distances(dm, feat_matrix, metric="euclidean"):
         """ Gets a sample of size SAMPLE_SET_SIZE from the image database. Calculates the
-         pairwise distance according to all the features, over all the images, and sums
-         those distances. Returns these distance sums, that can then be used to normalize
-         the distances calculated over the whole database. """
+         pairwise distance over all images according to the given feature matrix (feat_matrix).
+         Sums those distances and returns the sum, so that it can then be used to normalize
+         the distances calculated later over the whole database. """
 
         imgs = dm.get_rand_set(SAMPLE_SET_SIZE)
 
@@ -144,8 +126,6 @@ class SimilarityCalculator:
                     sum_dist += pairwise_distances(feat_matrix[img1].reshape(1, -1),
                                                    feat_matrix[img2].reshape(1, -1),
                                                    metric=metric)
-
-                    # TODO vgg16 features sum distances
 
         return sum_dist
 

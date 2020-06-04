@@ -47,21 +47,15 @@ def vgg16_layer(img, layer='block1_pool'):
 
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
-    print(model_layer.input)
-    #print(model_layer.summary())
-    max_pool_3d = tf.keras.layers.MaxPooling3D(pool_size=(8, 8, 8), strides=(1, 1, 1), padding='valid')
-
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
-
     features = model_layer.predict(x)
+
+    max_pool_3d = tf.keras.layers.MaxPooling3D(pool_size=(8, 8, 8), strides=(1, 1, 1), padding='valid')
     pool_feat = tf.constant(features)
     pool_feat = tf.reshape(pool_feat, [1, pool_feat.shape[1], pool_feat.shape[2], pool_feat.shape[3] , 1])
-    max_pool = max_pool_3d(pool_feat)
-
-    print(max_pool)
-    return max_pool.numpy
+    return max_pool_3d(pool_feat).numpy
 
 
 def plot_hoc(hist_r, bins_r):
