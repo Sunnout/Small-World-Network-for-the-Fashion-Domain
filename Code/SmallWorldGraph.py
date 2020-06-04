@@ -4,11 +4,11 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION
+from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
+    GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE
 from Code.DataManager import DataManager as dm
 from Code.ImageProcessor import ImageProcessor as ip
-from Code.SimilarityCalculator import SimilarityCalculator
-
+from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
 
 
 class SmallWorldGraph:
@@ -126,17 +126,17 @@ class SmallWorldGraph:
         rows = 1
 
         if feat == "colors":
-            neighbours = self.sc.color_neigh
+            neighbours = load_neigh(COLOR_NEIGH_FILE)
         elif feat == "grads":
-            neighbours = self.sc.grads_neigh
+            neighbours = load_neigh(GRADS_NEIGH_FILE)
         elif feat == "vgg1":
-            neighbours = self.sc.vgg16_block1_neigh
+            neighbours = load_neigh(VGG_BLOCK1_NEIGH_FILE)
         elif feat == "vgg2":
-            neighbours = self.sc.vgg16_block2_neigh
+            neighbours = load_neigh(VGG_BLOCK2_NEIGH_FILE)
         elif feat == "vgg3":
-            neighbours = self.sc.vgg16_block3_neigh
+            neighbours = load_neigh(VGG_BLOCK3_NEIGH_FILE)
         else:
-            neighbours = self.sc.color_neigh
+            neighbours = load_neigh(COLOR_NEIGH_FILE)
 
         for i in range(1, columns * rows + 1):
             img = ip.center_crop_image(dm.get_single_img(idx[neighbours[src[0]][i - 1]]))
