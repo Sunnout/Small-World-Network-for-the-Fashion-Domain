@@ -2,8 +2,7 @@ import os
 
 import numpy as np
 
-from Code.Constants import FILES_DIR, HOC_MATRIX_FILE, HOG_MATRIX_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK2_MATRIX_FILE, \
-    VGG_BLOCK3_MATRIX_FILE, STD_COLUMN, NPZ_EXTENSION
+from Code.Constants import FILES_DIR, HOC_MATRIX_FILE, HOG_MATRIX_FILE, STD_COLUMN, NPZ_EXTENSION, VGG_MATRIX_FILES
 from sklearn.preprocessing import normalize
 from skimage import img_as_ubyte
 from skimage.transform import resize
@@ -15,7 +14,7 @@ import Code.FeatureExtractor as fe
 
 class ImageProcessor:
 
-    def __init__(self, update=False):
+    def __init__(self, update=False, layers=[]):
         """ Pre-processes the images and extracts several features: color,
          gradients and features from 3 layers of vgg16. Stores those features
          in files for later use. """
@@ -32,14 +31,9 @@ class ImageProcessor:
             # Extracting HoG
             self.extract_feature(image_names, HOG_MATRIX_FILE, self.extract_img_hog)
 
-            # Extracting VGG16_block1
-            self.extract_vgg_feature(image_names, VGG_BLOCK1_MATRIX_FILE, "block1_pool")
-
-            # Extracting VGG16_block2
-            self.extract_vgg_feature(image_names, VGG_BLOCK2_MATRIX_FILE, "block2_pool")
-
-            # Extracting VGG16_block3
-            self.extract_vgg_feature(image_names, VGG_BLOCK3_MATRIX_FILE, "block3_pool")
+            # Extracting VGG16 layers
+            for layer in layers:
+                self.extract_vgg_feature(image_names, VGG_MATRIX_FILES[layer], layer)
 
     def extract_img_hoc(self, img_name):
         img = dm.get_single_img(img_name)

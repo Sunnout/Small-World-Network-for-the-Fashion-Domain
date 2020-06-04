@@ -6,7 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
-    GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE
+    GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE, VGG16_BLOCK1_POOL_LAYER, \
+    VGG16_BLOCK2_POOL_LAYER, VGG16_BLOCK3_POOL_LAYER, VGG16_BLOCK4_POOL_LAYER, VGG16_BLOCK5_POOL_LAYER, \
+    VGG_BLOCK4_NEIGH_FILE, VGG_BLOCK5_NEIGH_FILE
 from Code.DataManager import DataManager as dm
 import Code.ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
@@ -27,11 +29,11 @@ class SmallWorldGraph:
     TODO algoritmo para reduzir o numero de arcos
     """
 
-    def __init__(self, update=False):
+    def __init__(self, update=False, layers=[]):
         """ Creates a graph with the images as nodes and the edges created according
          to the distance matrix that was previously calculated and stored. """
         tf.compat.v1.enable_eager_execution()
-        self.sc = SimilarityCalculator(update)
+        self.sc = SimilarityCalculator(update, layers)
         self.graph = nx.Graph()
 
         # Reading distance matrix
@@ -44,9 +46,10 @@ class SmallWorldGraph:
 
     def add_kneighbours(self, node, k=10):
         sorted_idx = np.argsort(self.dist_matrix[node])
-        for j in sorted_idx[1:k+1]:
-            if not self.graph.has_edge((j, self.sc.dm.image_names[j]), (node, self.sc.dm.image_names[node])) :
-                self.graph.add_edge((node, self.sc.dm.image_names[node]), (j, self.sc.dm.image_names[j]), distance=self.dist_matrix[node, j])
+        for j in sorted_idx[1:k + 1]:
+            if not self.graph.has_edge((j, self.sc.dm.image_names[j]), (node, self.sc.dm.image_names[node])):
+                self.graph.add_edge((node, self.sc.dm.image_names[node]), (j, self.sc.dm.image_names[j]),
+                                    distance=self.dist_matrix[node, j])
 
     @staticmethod
     def show_graph(graph, img_size=0.1, graph_name="graph.pdf"):
@@ -130,12 +133,16 @@ class SmallWorldGraph:
             neighbours = load_neigh(COLOR_NEIGH_FILE)
         elif feat == "grads":
             neighbours = load_neigh(GRADS_NEIGH_FILE)
-        elif feat == "vgg1":
+        elif feat == VGG16_BLOCK1_POOL_LAYER:
             neighbours = load_neigh(VGG_BLOCK1_NEIGH_FILE)
-        elif feat == "vgg2":
+        elif feat == VGG16_BLOCK2_POOL_LAYER:
             neighbours = load_neigh(VGG_BLOCK2_NEIGH_FILE)
-        elif feat == "vgg3":
+        elif feat == VGG16_BLOCK3_POOL_LAYER:
             neighbours = load_neigh(VGG_BLOCK3_NEIGH_FILE)
+        elif feat == VGG16_BLOCK4_POOL_LAYER:
+            neighbours = load_neigh(VGG_BLOCK4_NEIGH_FILE)
+        elif feat == VGG16_BLOCK5_POOL_LAYER:
+            neighbours = load_neigh(VGG_BLOCK5_NEIGH_FILE)
         else:
             neighbours = load_neigh(COLOR_NEIGH_FILE)
 
@@ -167,9 +174,41 @@ class SmallWorldGraph:
 
         return nx.omega(self.graph)
 
+    def show_node_neighbours(self, node, img_size=0.1, graph_name="ego_graph.pdf"):
+        ego = nx.ego_graph(self.graph, node, undirected=True)
+        # self.show_graph(ego, img_size=0.1, graph_name="ego_graph.pdf")
+        for (u, v) in ego.edges():
+            if u != node and v != node:
+                ego.remove_edge(u, v)
+        pos = nx.spring_layout(ego)
+        fig = plt.figure(figsize=(20, 20))
+        ax = plt.subplot(111)
+        ax.set_aspect('equal')
+
+        nx.draw_networkx_edges(ego, pos, ax=ax)
+
+        plt.xlim(-1.5, 1.5)
+        plt.ylim(-1.5, 1.5)
+        trans = ax.transData.transform
+        trans2 = fig.transFigure.inverted().transform
+        p2 = img_size / 2.0
+        for n in ego:
+            xx, yy = trans(pos[n])  # figure coordinates
+            xa, ya = trans2((xx, yy))  # axes coordinates
+            a = plt.axes([xa - p2, ya - p2, img_size, img_size])
+            a.set_aspect('equal')
+            a.imshow(dm.get_single_img(n[1]))
+            a.axis('off')
+        ax.axis('off')
+
+        if not os.path.exists(RESULTS_DIR):
+            os.makedirs(RESULTS_DIR)
+
+        plt.savefig(RESULTS_DIR + graph_name, format="pdf")
+
     @staticmethod
     def print_metrics(graph):
-        node_count= len(list(graph.nodes))
+        node_count = len(list(graph.nodes))
         edge_count = 0
 
         # Calculate the average distance of each edge in the graph
@@ -190,7 +229,7 @@ class SmallWorldGraph:
                     avg_shortest_path_size += len(list(path))
 
         avg_edge_count = avg_edge_count / node_count
-        avg_shortest_path_size = avg_shortest_path_size / ((node_count*(node_count-1))/2)
+        avg_shortest_path_size = avg_shortest_path_size / ((node_count * (node_count - 1)) / 2)
 
         # Calculate the additional metrics like sigma, omega and the clustering coefficient
         sigma = nx.sigma(graph)

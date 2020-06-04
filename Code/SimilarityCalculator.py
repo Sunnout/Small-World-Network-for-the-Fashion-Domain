@@ -4,15 +4,15 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 
 from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE, HOC_MATRIX_FILE, HOG_MATRIX_FILE, COLOR_NEIGH_FILE, \
-    GRADS_NEIGH_FILE, VGG_BLOCK1_MATRIX_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_MATRIX_FILE, VGG_BLOCK2_NEIGH_FILE, \
-    VGG_BLOCK3_MATRIX_FILE, VGG_BLOCK3_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN, NPZ_EXTENSION, N_NEIGHBOURS
+    GRADS_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN, NPZ_EXTENSION, N_NEIGHBOURS, \
+    VGG_NEIGH_FILES, VGG_MATRIX_FILES
 from Code.DataManager import DataManager
 from Code.ImageProcessor import ImageProcessor, load_feature
 
 
 class SimilarityCalculator:
 
-    def __init__(self, update=False):
+    def __init__(self, update=False, layers=[]):
         """ Computes the k-NN of all the images according to all the features. Creates
          a similarity matrix (final_matrix) by computing the pairwise distances over all
          images, according to all features. Then, normalizes those distances and sums them.
@@ -22,7 +22,7 @@ class SimilarityCalculator:
         # Updates the image database if update=True
         self.dm = DataManager(update)
         # Extracts the features again if update=True
-        self.ip = ImageProcessor(update)
+        self.ip = ImageProcessor(update, layers)
 
         if update:
             num_imgs = self.dm.get_num_imgs()
@@ -37,14 +37,10 @@ class SimilarityCalculator:
             # Calculating k-NN of every image according to gradient feature
             self.calculate_neighbours_and_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
 
-            # Calculating k-NN of image i according to vgg16_block1 feature
-            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK1_MATRIX_FILE), VGG_BLOCK1_NEIGH_FILE)
-
-            # Calculating k-NN of image i according to vgg16_block2 feature
-            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK2_MATRIX_FILE), VGG_BLOCK2_NEIGH_FILE)
-
-            # Calculating k-NN of image i according to vgg16_block3 feature
-            self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_BLOCK3_MATRIX_FILE), VGG_BLOCK3_NEIGH_FILE)
+            # Calculating k-NN of image i according to the given vgg16 features
+            for layer in layers:
+                self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_MATRIX_FILES[layer]),
+                                                        VGG_NEIGH_FILES[layer])
 
             for i in range(0, num_imgs):
                 for j in range(i + 1, num_imgs):
