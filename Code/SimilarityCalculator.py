@@ -60,7 +60,6 @@ class SimilarityCalculator:
          the pairwise distances over all images, according to the feature matrix. Then,
          normalizes those distances and sums them to the corresponding indexes of the
          final similarity matrix. """
-
         normalizer = self.calc_sum_distances(self.dm, feat_matrix)
 
         feature_neigh = []

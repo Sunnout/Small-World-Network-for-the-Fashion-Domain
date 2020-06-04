@@ -1,13 +1,14 @@
 import os
 
 import networkx as nx
+import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
 from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
     GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE
 from Code.DataManager import DataManager as dm
-from Code.ImageProcessor import ImageProcessor as ip
+import Code.ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
 
 
@@ -29,7 +30,7 @@ class SmallWorldGraph:
     def __init__(self, update=False):
         """ Creates a graph with the images as nodes and the edges created according
          to the distance matrix that was previously calculated and stored. """
-
+        tf.compat.v1.enable_eager_execution()
         self.sc = SimilarityCalculator(update)
         self.graph = nx.Graph()
 
