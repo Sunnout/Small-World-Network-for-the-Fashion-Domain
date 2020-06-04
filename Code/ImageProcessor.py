@@ -75,6 +75,7 @@ class ImageProcessor:
         features = np.array(features)
         np.savez('{}.npz'.format(FILES_DIR + npz_name), features=features)
 
+    # esta funcao talvez pudesse ser incluida na de cima se passasemos layer a tudo
     def extract_vgg_feature(self, img_names, npz_name, layer_name):
         features = []
         for img_name in img_names:
@@ -85,7 +86,8 @@ class ImageProcessor:
 
 
 def load_feature(npz_name):
-    # Reading feature matrices from files
+    """ Reads the feature matrix from a file with a given name (npz_name). """
+
     return np.load(FILES_DIR + npz_name + NPZ_EXTENSION, mmap_mode="r")[STD_COLUMN]
 
 

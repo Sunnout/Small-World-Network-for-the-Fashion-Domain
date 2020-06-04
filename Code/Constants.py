@@ -11,7 +11,7 @@ DATA_DIR = "../Data/"
 SAMPLE_SET_SIZE = 10
 
 # Standard name use for the column when writing files
-# WARNING: When changing this make sure to change the np.savez statements as well
+# WARNING: When changing this make sure to change the np.savez and np.load statements as well
 STD_COLUMN = "features"
 
 NPZ_EXTENSION = ".npz"
@@ -31,5 +31,8 @@ VGG_BLOCK2_NEIGH_FILE = "vgg16_block2_neighbours"
 VGG_BLOCK3_NEIGH_FILE = "vgg16_block3_neighbours"
 
 KNN = "knn"
+
+# Number of neighbours to extract
+N_NEIGHBOURS = 10
 
 
