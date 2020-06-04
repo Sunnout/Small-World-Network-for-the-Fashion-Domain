@@ -44,27 +44,24 @@ def vgg16_layer(img, layer='block1_pool'):
     """ Extracts the feature values for a given image (img), from a given vgg16
       layer (layer). """
     tf.keras.backend.clear_session()
+
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
     print(model_layer.input)
     #print(model_layer.summary())
-    max_pool_2d = MaxPooling2D(pool_size=(8, 8), strides = (1, 1), padding = 'valid', data_format = 'channels_last')
+    max_pool_3d = tf.keras.layers.MaxPooling3D(pool_size=(8, 8, 8), strides=(1, 1, 1), padding='valid')
 
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
 
     features = model_layer.predict(x)
-    '''sess = Session()
-    with sess.as_default():
-        pool_feat = tf.constant(features)
-        print(features.shape)
-        pool_feat = tf.reshape(pool_feat, features.shape)
-        pool_feat = max_pool_2d(pool_feat)
+    pool_feat = tf.constant(features)
+    pool_feat = tf.reshape(pool_feat, [1, pool_feat.shape[1], pool_feat.shape[2], pool_feat.shape[3] , 1])
+    max_pool = max_pool_3d(pool_feat)
 
-        pool_feat = pool_feat.eval(session=sess).flatten()'''
-    #print(features.shape)
-    return features.flatten()
+    print(max_pool)
+    return max_pool.numpy
 
 
 def plot_hoc(hist_r, bins_r):
