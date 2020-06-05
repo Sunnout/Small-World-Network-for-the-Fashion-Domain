@@ -50,8 +50,11 @@ IMG_NAMES = "names"
 # Size of the sample set used to obtain the normalization values
 SAMPLE_SET_SIZE = 10
 
-# Number of neighbours to extract
+# Number of neighbours to extract for each feature
 N_NEIGHBOURS = 10
+
+# Number of edges to add for each node in the graph
+EDGES = 5
 
 # VGG16 Available layers
 VGG16_BLOCK1_POOL_LAYER = "block1_pool"
