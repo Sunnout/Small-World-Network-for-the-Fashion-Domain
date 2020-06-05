@@ -10,7 +10,7 @@ import Code.ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
 
 from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
-    GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE, VGG16_BLOCK1_POOL_LAYER, \
+    GRADS_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE, \
     VGG16_BLOCK2_POOL_LAYER, VGG16_BLOCK3_POOL_LAYER, VGG16_BLOCK4_POOL_LAYER, VGG16_BLOCK5_POOL_LAYER, \
     VGG_BLOCK4_NEIGH_FILE, VGG_BLOCK5_NEIGH_FILE, DIST, EDGES
 
@@ -210,8 +210,6 @@ class SmallWorldGraph:
             neighbours = load_neigh(COLOR_NEIGH_FILE)
         elif feat == "grads":
             neighbours = load_neigh(GRADS_NEIGH_FILE)
-        elif feat == VGG16_BLOCK1_POOL_LAYER:
-            neighbours = load_neigh(VGG_BLOCK1_NEIGH_FILE)
         elif feat == VGG16_BLOCK2_POOL_LAYER:
             neighbours = load_neigh(VGG_BLOCK2_NEIGH_FILE)
         elif feat == VGG16_BLOCK3_POOL_LAYER:
