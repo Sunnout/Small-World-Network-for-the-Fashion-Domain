@@ -101,7 +101,7 @@ class ImageProcessor:
 
 def load_feature(npz_name):
     """ Reads the feature matrix from a file with a given name (npz_name). """
-
+    
     return np.load(FILES_DIR + npz_name + NPZ_EXTENSION, mmap_mode="r")[FEATURE]
 
 

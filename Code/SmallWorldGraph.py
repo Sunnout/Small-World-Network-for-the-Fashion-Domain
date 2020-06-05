@@ -17,14 +17,14 @@ from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXT
 
 class SmallWorldGraph:
 
-    def __init__(self, update=False, layers=[]):
+    def __init__(self, update=False, compute_final_distances=False, layers=[]):
         """ Creates a graph with the images as nodes and the edges created according
          to the distance matrix that was previously calculated and stored. """
 
         # To be able to extract numpy arrays from Tensor Objects
         tf.compat.v1.enable_eager_execution()
 
-        self.sc = SimilarityCalculator(update, layers)
+        self.sc = SimilarityCalculator(update, compute_final_distances, layers)
         self.graph = nx.Graph()
 
         # Reading distance matrix from file

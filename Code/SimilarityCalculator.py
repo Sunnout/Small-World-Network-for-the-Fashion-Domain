@@ -11,10 +11,9 @@ from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE, HOC_MATRIX_FILE, HOG_MATR
     VGG_NEIGH_FILES, VGG_MATRIX_FILES
 
 
-
 class SimilarityCalculator:
 
-    def __init__(self, update=False, layers=[]):
+    def __init__(self, update=False, compute_final_distances=False, layers=[]):
         """ Computes the k-NN of all the images according to all the features. Creates
          a similarity matrix (final_matrix) by computing the pairwise distances over all
          images, according to all features. Then, normalizes those distances and sums them.
@@ -26,41 +25,30 @@ class SimilarityCalculator:
         # Extracts the features again if update=True
         self.ip = ImageProcessor(update, layers)
 
+        num_imgs = self.dm.get_num_imgs()
         if update:
-            num_imgs = self.dm.get_num_imgs()
             self.final_matrix = np.zeros((num_imgs, num_imgs))
 
-            if not os.path.exists(FILES_DIR):
-                os.makedirs(FILES_DIR)
-
-            # Calculating k-NN and pairwise distance of every image according to color feature
-            self.calculate_neighbours_and_distances(num_imgs, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
-
-            # Calculating k-NN and pairwise distance of every image according to gradient feature
-            self.calculate_neighbours_and_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
-
-            # Calculating k-NN and pairwise distance of every image according to the given VGG16 layers
+            # Calculating k-NN of every image according to all features
+            self.calculate_neighbours(num_imgs, load_feature(HOC_MATRIX_FILE), COLOR_NEIGH_FILE)
+            self.calculate_neighbours(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
             for layer in layers:
-                self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_MATRIX_FILES[layer]),
-                                                        VGG_NEIGH_FILES[layer])
+                self.calculate_neighbours(num_imgs, load_feature(VGG_MATRIX_FILES[layer]),
+                                          VGG_NEIGH_FILES[layer])
 
-            # Saving the same values in opposite indexes because the final distance matrix is symmetric
-            for i in range(0, num_imgs):
-                for j in range(i + 1, num_imgs):
-                    self.final_matrix[j, i] = self.final_matrix[i, j]
+            # Calculating pairwise distance of every image according to all features
+            self.calculate_final_distance_matrix(num_imgs, layers)
 
-            # Save the final distances matrix to a file
-            np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), dist=self.final_matrix)
+        elif compute_final_distances:
+            # Calculating pairwise distance of every image according to all features
+            self.calculate_final_distance_matrix(num_imgs, layers)
 
-    def calculate_neighbours_and_distances(self, num_imgs, feat_matrix, npz_name):
+    def calculate_neighbours(self, num_imgs, feat_matrix, npz_name):
         """ Computes the k-NN of all the images according to a given feature matrix
-         (feat_matrix) and stores them in a file with a given name (npz_name). Computes
-         the pairwise distances over all images, according to the feature matrix. Then,
-         normalizes those distances and sums them to the corresponding indexes of the
-         final similarity matrix. """
+         (feat_matrix) and stores them in a file with a given name (npz_name). """
 
-        # Calculating normalization value
-        normalizer = self.calc_sum_distances(self.dm, feat_matrix)
+        if not os.path.exists(FILES_DIR):
+            os.makedirs(FILES_DIR)
 
         feature_neigh = []
         for i in range(0, num_imgs):
@@ -68,15 +56,49 @@ class SimilarityCalculator:
             neighbours, _ = self.k_neighbours(feat_matrix[i].reshape(1, -1), feat_matrix, k=N_NEIGHBOURS)
             feature_neigh.append(neighbours)
 
+        # Saving neighbours matrix in file
+        np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
+
+    def calculate_final_distance_matrix(self, num_imgs, layers):
+        self.final_matrix = np.zeros((num_imgs, num_imgs))
+
+        # Calculating pairwise distance of every image according to color feature
+        self.calculate_distances(num_imgs, load_feature(HOC_MATRIX_FILE))
+
+        # Calculating pairwise distance of every image according to gradient feature
+        self.calculate_distances(num_imgs, load_feature(HOG_MATRIX_FILE))
+
+        # Calculating pairwise distance of every image according to the given VGG16 layers
+        for layer in layers:
+            self.calculate_distances(num_imgs, load_feature(VGG_MATRIX_FILES[layer]))
+
+        # Saving the same values in opposite indexes because the final distance matrix is symmetric
+        for i in range(0, num_imgs):
+            for j in range(i + 1, num_imgs):
+                self.final_matrix[j, i] = self.final_matrix[i, j]
+
+        if not os.path.exists(FILES_DIR):
+            os.makedirs(FILES_DIR)
+
+        # Save the final distances matrix to a file
+        np.savez('{}.npz'.format(FILES_DIR + FINAL_DISTANCES_FILE), dist=self.final_matrix)
+
+    def calculate_distances(self, num_imgs, feat_matrix):
+        """ Computes the pairwise distances over all images, according to the
+         feature matrix. Then, normalizes those distances and sums them to the
+         corresponding indexes of the final similarity matrix. """
+
+        # Calculating normalization value
+        normalizer = self.calc_sum_distances(self.dm, feat_matrix)
+
+        feature_neigh = []
+        for i in range(0, num_imgs):
             for j in range(i + 1, num_imgs):
                 # Calculating the distances, normalizing and adding them to the final similarity matrix
                 dist = pairwise_distances(feat_matrix[i].reshape(1, -1), feat_matrix[j].reshape(1, -1),
                                           metric="euclidean")
                 norm_dist = np.squeeze(dist / normalizer)
                 self.final_matrix[i, j] += norm_dist
-
-        # Saving neighbours matrix in file
-        np.savez('{}.npz'.format(FILES_DIR + npz_name), knn=feature_neigh)
 
     @staticmethod
     def k_neighbours(query, matrix, metric="euclidean", k=10):
