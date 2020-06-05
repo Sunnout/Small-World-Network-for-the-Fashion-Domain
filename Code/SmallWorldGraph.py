@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
     GRADS_NEIGH_FILE, VGG_BLOCK1_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE, VGG16_BLOCK1_POOL_LAYER, \
     VGG16_BLOCK2_POOL_LAYER, VGG16_BLOCK3_POOL_LAYER, VGG16_BLOCK4_POOL_LAYER, VGG16_BLOCK5_POOL_LAYER, \
-    VGG_BLOCK4_NEIGH_FILE, VGG_BLOCK5_NEIGH_FILE
+    VGG_BLOCK4_NEIGH_FILE, VGG_BLOCK5_NEIGH_FILE, DIST
 from Code.DataManager import DataManager as dm
 import Code.ImageProcessor as ip
 from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
@@ -37,7 +37,7 @@ class SmallWorldGraph:
         self.graph = nx.Graph()
 
         # Reading distance matrix
-        self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE + NPZ_EXTENSION)["dist"]
+        self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE + NPZ_EXTENSION)[DIST]
 
         num_imgs = len(dm.get_img_names())
         # Creating all edges and the corresponding nodes as tuples of (index, image_name)

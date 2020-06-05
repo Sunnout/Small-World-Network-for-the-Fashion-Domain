@@ -4,7 +4,7 @@ import random
 import numpy as np
 from skimage.io import imread
 
-from Code.Constants import FILES_DIR, DATA_DIR
+from Code.Constants import FILES_DIR, DATA_DIR, IMG_NAMES
 
 
 class DataManager:
@@ -23,7 +23,7 @@ class DataManager:
 
             np.savez('{}.npz'.format(FILES_DIR + "image_names"), names=self.image_names)
         else:
-            self.image_names = np.load(FILES_DIR + "image_names.npz")["names"]
+            self.image_names = np.load(FILES_DIR + "image_names.npz")[IMG_NAMES]
 
     def get_all_imgs(self):
         """ Returns all the images from the database. """

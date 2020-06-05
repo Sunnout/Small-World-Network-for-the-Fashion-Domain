@@ -3,11 +3,13 @@ import os
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
+from Code.DataManager import DataManager
+from Code.ImageProcessor import ImageProcessor, load_feature
+
 from Code.Constants import FILES_DIR, SAMPLE_SET_SIZE, HOC_MATRIX_FILE, HOG_MATRIX_FILE, COLOR_NEIGH_FILE, \
     GRADS_NEIGH_FILE, FINAL_DISTANCES_FILE, KNN, NPZ_EXTENSION, N_NEIGHBOURS, \
     VGG_NEIGH_FILES, VGG_MATRIX_FILES
-from Code.DataManager import DataManager
-from Code.ImageProcessor import ImageProcessor, load_feature
+
 
 
 class SimilarityCalculator:
@@ -37,7 +39,7 @@ class SimilarityCalculator:
             # Calculating k-NN of every image according to gradient feature
             self.calculate_neighbours_and_distances(num_imgs, load_feature(HOG_MATRIX_FILE), GRADS_NEIGH_FILE)
 
-            # Calculating k-NN of image i according to the given vgg16 features
+            # Calculating k-NN of image i according to the given vgg16 layers
             for layer in layers:
                 self.calculate_neighbours_and_distances(num_imgs, load_feature(VGG_MATRIX_FILES[layer]),
                                                         VGG_NEIGH_FILES[layer])
