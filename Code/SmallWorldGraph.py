@@ -154,46 +154,39 @@ class SmallWorldGraph:
         plt.savefig(RESULTS_DIR + graph_name, format="pdf")
 
     def print_graph_metrics(self):
-        """ Computes several metrics for the graph. """
+        """ Computes several metrics for the graph: number of nodes, number
+         of edges, average node degree, clustering coefficient, average shortest
+         path and graph connectivity. Prints the computed metrics. """
 
-        # Calculate number of nodes and edges
-        node_count = len(list(self.graph.nodes))
-        edge_count = len(list(self.graph.edges))
-
-        # Calculate average edge distance
-        avg_edge_dist = 0.0
-        for (u, v, d) in self.graph.edges.data('distance', default=1.0):
-            avg_edge_dist += d
-        avg_edge_dist = avg_edge_dist / edge_count
-
-        # Calculate average edges per node
-        avg_edge_count = 0.0
-        for node in self.graph:
-            avg_edge_count += len(list(self.graph.edges(node)))
-        avg_edge_count = avg_edge_count / node_count
-
-        # Calculate sigma, omega
-        sigma = nx.sigma(self.graph)
-        omega = nx.omega(self.graph)
-
-        # Calculate clustering coefficient, average shortest path length and connectivity
+        node_count = self.graph.number_of_nodes()
+        edge_count = self.graph.number_of_edges()
+        node_degrees = self.graph.degree()
+        avg_node_degree = 0
+        for d in node_degrees:
+            avg_node_degree += d[1]
+        avg_node_degree = avg_node_degree/node_count
         clustering_coefficient = nx.average_clustering(self.graph)
         avg_shortest_path_len = nx.average_shortest_path_length(self.graph)
-        is_connected = nx.component.is_connected(self.graph)
+        is_connected = nx.is_connected(self.graph)
 
         print("---------- ------ Metrics ------ ----------")
-        print("Number of Nodes: \t\t\t\t" + str(node_count))
-        print("Number of Edges: \t\t\t\t" + str(edge_count))
+        print("Number of Nodes: " + str(node_count))
+        print("Number of Edges: " + str(edge_count))
         print("---------- ---------- ---------- ----------")
-        print("Connected Graph: \t\t\t\t" + str(is_connected))
+        print("Connected Graph: " + str(is_connected))
         print("---------- ---------- ---------- ----------")
-        print("Average Neighbour Count: \t\t" + str(avg_edge_count))
-        print("Average Neighbour Distance: \t" + str(avg_edge_dist))
-        print("Average Shortest Path Length: \t" + str(avg_shortest_path_len))
-        print("Average Clustering Coefficient: \t" + str(clustering_coefficient))
-        print("---------- ---------- ---------- ----------")
-        print("Small World Measure: \t\t\t\t" + str(sigma))
-        print("Small Coefficient: \t\t\t\t" + str(omega))
+        print("Average Node Degree: " + str(avg_node_degree))
+        print("Average Shortest Path Length: " + str(avg_shortest_path_len))
+        print("Average Clustering Coefficient: " + str(clustering_coefficient))
+
+    def print_small_coefficient(self):
+        """ Computes the small-world coefficient and prints it. The small-world
+         coefficient (omega) ranges between -1 and 1. Values close to 0 mean the
+         graph features small-world characteristics. Values close to -1 mean the
+         graph has a lattice shape whereas values close to 1 mean it is a random graph."""
+
+        omega = nx.omega(self.graph)
+        print("Small Coefficient: " + str(omega))
 
     @staticmethod
     def show_feature_neighbours(src, graph_name="feature_neighbours.pdf", k=10, feat="colors"):

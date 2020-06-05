@@ -37,7 +37,7 @@ def my_hog(img, orientations=8, pixels_per_cell=(16, 16)):
     return fd
 
 
-def vgg16_layer(img, layer='block1_pool'):
+def vgg16_layer(img, layer='block2_pool'):
     """ Extracts the feature values for a given image (img), from a given VGG16
       layer (layer). """
 
@@ -60,4 +60,4 @@ def vgg16_layer(img, layer='block1_pool'):
     pool_feat = tf.reshape(pool_feat, [-1])
     pool_feat = pool_feat.numpy()
 
-    return pool_feat
+    return pool_feat.flatten()
