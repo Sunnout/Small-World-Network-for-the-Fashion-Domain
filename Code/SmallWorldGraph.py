@@ -16,35 +16,34 @@ from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXT
 
 
 class SmallWorldGraph:
-    """
-    Documentation: https://networkx.github.io/documentation/stable/reference/index.html
-    Functions of networkx for Small World Graphs: https://networkx.github.io/documentation/stable/reference/algorithms/smallworld.html
-
-    If we want to compute them ourselves:
-    average_clustering(G[, trials, seed]) - Returns the average clustering coefficient of a graph.
-
-    """
 
     def __init__(self, update=False, layers=[]):
         """ Creates a graph with the images as nodes and the edges created according
          to the distance matrix that was previously calculated and stored. """
 
+        # To be able to extract numpy arrays from Tensor Objects
         tf.compat.v1.enable_eager_execution()
 
         self.sc = SimilarityCalculator(update, layers)
         self.graph = nx.Graph()
 
-        # Reading distance matrix
+        # Reading distance matrix from file
         self.dist_matrix = np.load(FILES_DIR + FINAL_DISTANCES_FILE + NPZ_EXTENSION)[DIST]
 
-        # Creating the edges and the corresponding nodes as tuples of (index, image_name)
-        # TODO criar nos pq pode acontecer que nao haja edges para eles!!
-        num_imgs = len(dm.get_img_names())
-        for i in range(0, num_imgs):
+        # Creating nodes as tuples of (index, image_name), for all the images in the database
+        node_idx = 0
+        for name in self.sc.dm.get_img_names():
+            self.graph.add_node((node_idx, name))
+            node_idx += 1
+
+        # Creating the edges for node with index i
+        for i in range(0, self.sc.dm.get_num_imgs()):
             self.add_node_edges(i, n_edges=EDGES)
 
     def add_node_edges(self, node, n_edges=10):
-        """ COMENTAR """
+        """ Given a node index (node) and the number of edges to create (n_edges),
+         creates edges from that node to the nodes closest it, according to the
+         final distance matrix. """
 
         sorted_idx = np.argsort(self.dist_matrix[node])
         for j in sorted_idx[1:n_edges + 1]:
@@ -70,8 +69,8 @@ class SmallWorldGraph:
         trans2 = fig.transFigure.inverted().transform
         p2 = img_size / 2.0
         for n in self.graph:
-            xx, yy = trans(pos[n])  # figure coordinates
-            xa, ya = trans2((xx, yy))  # axes coordinates
+            xx, yy = trans(pos[n])
+            xa, ya = trans2((xx, yy))
             a = plt.axes([xa - p2, ya - p2, img_size, img_size])
             a.set_aspect('equal')
             a.imshow(dm.get_single_img(n[1]))
@@ -85,8 +84,8 @@ class SmallWorldGraph:
 
     def show_shortest_path(self, src, dst, img_size=0.1, graph_name="path.pdf"):
         """ Creates a figure showing the shortest path between two images (src and dst)
-         on a given graph (graph). Saves it with a given name (graph_name). The images
-         are given as tuples of (index, image_name), like so: (0, "img_00000000.jpg"). """
+         and saves it with a given name (graph_name). The images are given as tuples of
+         (index, image_name), like so: (0, "img_00000000.jpg"). """
 
         pos = nx.circular_layout(self.graph)
         fig = plt.figure(figsize=(25, 20))
@@ -106,8 +105,8 @@ class SmallWorldGraph:
         trans2 = fig.transFigure.inverted().transform
         p2 = img_size / 2.0
         for n in nodes:
-            xx, yy = trans(pos[n])  # Figure coordinates
-            xa, ya = trans2((xx, yy))  # Axis coordinates
+            xx, yy = trans(pos[n])
+            xa, ya = trans2((xx, yy))
             a = plt.axes([xa - p2, ya - p2, img_size, img_size])
             a.set_aspect('equal')
             a.imshow(dm.get_single_img(n[1]))
@@ -119,9 +118,12 @@ class SmallWorldGraph:
 
         plt.savefig(RESULTS_DIR + graph_name, format="pdf")
 
-    def show_node_neighbours(self, node, img_size=0.1, graph_name="ego_graph.pdf"):
+    def show_node_neighbours(self, node, img_size=0.1, graph_name="node_neighbours.pdf"):
+        """ Creates a figure showing the neighbours of a given image (node) in the graph.
+         Saves it with a given name (graph_name). Node is given as a tuple of (index, image_name),
+         like so: (0, "img_00000000.jpg"). """
+
         ego = nx.ego_graph(self.graph, node, undirected=True)
-        # self.show_graph(ego, img_size=0.1, graph_name="ego_graph.pdf")
         for (u, v) in ego.edges():
             if u != node and v != node:
                 ego.remove_edge(u, v)
@@ -138,8 +140,8 @@ class SmallWorldGraph:
         trans2 = fig.transFigure.inverted().transform
         p2 = img_size / 2.0
         for n in ego:
-            xx, yy = trans(pos[n])  # figure coordinates
-            xa, ya = trans2((xx, yy))  # axes coordinates
+            xx, yy = trans(pos[n])
+            xa, ya = trans2((xx, yy))
             a = plt.axes([xa - p2, ya - p2, img_size, img_size])
             a.set_aspect('equal')
             a.imshow(dm.get_single_img(n[1]))
@@ -152,34 +154,38 @@ class SmallWorldGraph:
         plt.savefig(RESULTS_DIR + graph_name, format="pdf")
 
     def print_graph_metrics(self):
-        """ """
-        # TODO: VER MELHOR SE NÃO HÁ METODOS NA BIBLIOTECA NX!!!!!
-        node_count = len(list(self.graph.nodes))
-        edge_count = 0
+        """ Computes several metrics for the graph. """
 
-        # Calculate the average distance of each edge in the graph
+        # Calculate number of nodes and edges
+        node_count = len(list(self.graph.nodes))
+        edge_count = len(list(self.graph.edges))
+
+        # Calculate average edge distance
         avg_edge_dist = 0.0
         for (u, v, d) in self.graph.edges.data('distance', default=1.0):
             avg_edge_dist += d
-            edge_count += 1
         avg_edge_dist = avg_edge_dist / edge_count
 
-        # Calculate the average edges per node and the average shortest path length
+        # Calculate average edges per node
         avg_edge_count = 0.0
         for node in self.graph:
             avg_edge_count += len(list(self.graph.edges(node)))
-
         avg_edge_count = avg_edge_count / node_count
 
-        # Calculate sigma, omega, clustering coefficient and average shortest path length
+        # Calculate sigma, omega
         sigma = nx.sigma(self.graph)
         omega = nx.omega(self.graph)
+
+        # Calculate clustering coefficient, average shortest path length and connectivity
         clustering_coefficient = nx.average_clustering(self.graph)
         avg_shortest_path_len = nx.average_shortest_path_length(self.graph)
+        is_connected = nx.component.is_connected(self.graph)
 
         print("---------- ------ Metrics ------ ----------")
         print("Number of Nodes: \t\t\t\t" + str(node_count))
         print("Number of Edges: \t\t\t\t" + str(edge_count))
+        print("---------- ---------- ---------- ----------")
+        print("Connected Graph: \t\t\t\t" + str(is_connected))
         print("---------- ---------- ---------- ----------")
         print("Average Neighbour Count: \t\t" + str(avg_edge_count))
         print("Average Neighbour Distance: \t" + str(avg_edge_dist))
@@ -190,7 +196,7 @@ class SmallWorldGraph:
         print("Small Coefficient: \t\t\t\t" + str(omega))
 
     @staticmethod
-    def show_feature_neighbours(src, graph_name="neighbours.pdf", k=10, feat="colors"):
+    def show_feature_neighbours(src, graph_name="feature_neighbours.pdf", k=10, feat="colors"):
         """ Creates a figure showing the k-NN of a given image (src), according to a
          given feature (feat), side by side. Saves it with a given name (graph_name).
          src is given as a tuple of (index, image_name), like so: (0, "img_00000000.jpg"). """
