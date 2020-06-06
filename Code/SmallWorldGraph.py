@@ -56,6 +56,7 @@ class SmallWorldGraph:
         """ Creates a figure showing the full graph and saves it with a given name
          (graph_name). """
 
+        # TODO clustered graph
         pos = nx.circular_layout(self.graph)
         fig = plt.figure(figsize=(35, 35))
         ax = plt.subplot(111)
@@ -88,6 +89,7 @@ class SmallWorldGraph:
          (index, image_name), like so: (0, "img_00000000.jpg"). """
 
         pos = nx.circular_layout(self.graph)
+
         fig = plt.figure(figsize=(25, 20))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
@@ -96,6 +98,19 @@ class SmallWorldGraph:
         edges = []
         for i in range(1, len(nodes)):
             edges.append((nodes[i - 1], nodes[i]))
+         # TODO por path linear e com labels
+        """
+        
+        labels = {}
+        for key in pos.keys():
+            labels[key] = key[1]
+
+        pos_attrs = {}
+        for node, coords in pos.items():
+            pos_attrs[node] = (coords[0], coords[1] - 0.25)
+            
+        nx.draw_networkx_edge_labels(self.graph, pos=pos_attrs, ax=ax, labels=labels, font_size=14, font_color='r')
+        """
 
         nx.draw_networkx_edges(self.graph, pos, ax=ax, edgelist=edges)
 
@@ -128,11 +143,20 @@ class SmallWorldGraph:
             if u != node and v != node:
                 ego.remove_edge(u, v)
         pos = nx.spring_layout(ego)
+        labels = {}
+        for key in pos.keys():
+            labels[key] = key[1]
+
+        pos_attrs = {}
+        for node, coords in pos.items():
+            pos_attrs[node] = (coords[0], coords[1] - 0.25)
+
         fig = plt.figure(figsize=(20, 20))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
 
         nx.draw_networkx_edges(ego, pos, ax=ax)
+        nx.draw_networkx_labels(ego, pos=pos_attrs, ax=ax, labels=labels, font_size=14, font_color='r')
 
         plt.xlim(-1.5, 1.5)
         plt.ylim(-1.5, 1.5)
