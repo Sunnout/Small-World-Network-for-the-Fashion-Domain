@@ -57,7 +57,7 @@ class SmallWorldGraph:
          (graph_name). """
 
         # TODO clustered graph
-        pos = nx.circular_layout(self.graph)
+        pos = nx.spring_layout(self.graph, weight="distance")
         fig = plt.figure(figsize=(35, 35))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
@@ -88,33 +88,43 @@ class SmallWorldGraph:
          and saves it with a given name (graph_name). The images are given as tuples of
          (index, image_name), like so: (0, "img_00000000.jpg"). """
 
-        pos = nx.circular_layout(self.graph)
-
-        fig = plt.figure(figsize=(25, 20))
+        fig = plt.figure(figsize=(20, 10))
         ax = plt.subplot(111)
         ax.set_aspect('equal')
 
         nodes = nx.shortest_path(self.graph, src, dst, weight="distance")
+
+        g = nx.Graph()
+        pos = {}
+        labels = {}
+        i = 0
+        for node in nodes:
+            pos[node] = [i, 0]
+            i += 1
+            labels[node] = str(node[1])
+            g.add_node(node)
+
         edges = []
         for i in range(1, len(nodes)):
             edges.append((nodes[i - 1], nodes[i]))
-         # TODO por path linear e com labels
-        """
-        
-        labels = {}
-        for key in pos.keys():
-            labels[key] = key[1]
+
+        i = 0
+        for edge in edges:
+            i += 1
+            g.add_edge(edge[0], edge[1])
 
         pos_attrs = {}
-        for node, coords in pos.items():
-            pos_attrs[node] = (coords[0], coords[1] - 0.25)
-            
-        nx.draw_networkx_edge_labels(self.graph, pos=pos_attrs, ax=ax, labels=labels, font_size=14, font_color='r')
-        """
+        if len(nodes) <= 3:
+            for node, coords in pos.items():
+                pos_attrs[node] = (coords[0], coords[1] - 0.3)
+        else:
+            for node, coords in pos.items():
+                pos_attrs[node] = (coords[0], coords[1] - 0.4)
 
-        nx.draw_networkx_edges(self.graph, pos, ax=ax, edgelist=edges)
+        nx.draw_networkx_edges(g, pos, ax=ax, edgelist=edges)
+        nx.draw_networkx_labels(g, pos=pos_attrs, ax=ax, labels=labels, font_color='r')
 
-        plt.xlim(-1.5, 1.5)
+        plt.xlim(-2, len(nodes) + 1)
         plt.ylim(-1.5, 1.5)
         trans = ax.transData.transform
         trans2 = fig.transFigure.inverted().transform
@@ -188,7 +198,7 @@ class SmallWorldGraph:
         avg_node_degree = 0
         for d in node_degrees:
             avg_node_degree += d[1]
-        avg_node_degree = avg_node_degree/node_count
+        avg_node_degree = avg_node_degree / node_count
         clustering_coefficient = nx.average_clustering(self.graph)
         avg_shortest_path_len = nx.average_shortest_path_length(self.graph)
         is_connected = nx.is_connected(self.graph)
