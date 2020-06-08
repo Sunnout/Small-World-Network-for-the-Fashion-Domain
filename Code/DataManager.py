@@ -51,7 +51,8 @@ class DataManager:
 
         name_list = []
         for entry in os.scandir(DATA_DIR):
-            name_list.append(entry.name)
+            if entry.name.endswith('.jpg'):
+                name_list.append(entry.name)
 
         name_list.sort()
         return name_list

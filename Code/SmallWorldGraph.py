@@ -11,8 +11,8 @@ from Code.SimilarityCalculator import SimilarityCalculator, load_neigh
 
 from Code.Constants import FILES_DIR, RESULTS_DIR, FINAL_DISTANCES_FILE, NPZ_EXTENSION, COLOR_NEIGH_FILE, \
     GRADS_NEIGH_FILE, VGG_BLOCK2_NEIGH_FILE, VGG_BLOCK3_NEIGH_FILE, \
-    VGG16_BLOCK2_POOL_LAYER, VGG16_BLOCK3_POOL_LAYER, VGG16_BLOCK4_POOL_LAYER, VGG16_BLOCK5_POOL_LAYER, \
-    VGG_BLOCK4_NEIGH_FILE, VGG_BLOCK5_NEIGH_FILE, DIST, EDGES
+    VGG16_BLOCK2_POOL_LAYER, VGG16_BLOCK3_POOL_LAYER, VGG16_BLOCK4_POOL_LAYER, VGG_BLOCK4_NEIGH_FILE, \
+    DIST, EDGES
 
 
 class SmallWorldGraph:
@@ -213,14 +213,14 @@ class SmallWorldGraph:
         print("Average Shortest Path Length: " + str(avg_shortest_path_len))
         print("Average Clustering Coefficient: " + str(clustering_coefficient))
 
-    def print_small_coefficient(self):
-        """ Computes the small-world coefficient and prints it. The small-world
-         coefficient (omega) ranges between -1 and 1. Values close to 0 mean the
+    def print_small_world_measure(self):
+        """ Computes the small-world measure and prints it. The small-world
+         measure (omega) ranges between -1 and 1. Values close to 0 mean the
          graph features small-world characteristics. Values close to -1 mean the
          graph has a lattice shape whereas values close to 1 mean it is a random graph."""
 
         omega = nx.omega(self.graph)
-        print("Small Coefficient: " + str(omega))
+        print("Small World Measure: " + str(omega))
 
     @staticmethod
     def show_feature_neighbours(src, graph_name="feature_neighbours.pdf", k=10, feat="colors"):
@@ -253,9 +253,9 @@ class SmallWorldGraph:
             fig.add_subplot(rows, columns, i)
             plt.imshow(img)
             if i == 1:
-                plt.title("Query Image")
+                plt.title("Query Image", fontsize=20)
             else:
-                plt.title("Neighbour " + str(i - 1))
+                plt.title("Neighbour " + str(i - 1), fontsize=20)
             plt.axis("off")
 
         if not os.path.exists(RESULTS_DIR):
