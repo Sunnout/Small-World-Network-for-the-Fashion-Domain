@@ -46,7 +46,6 @@ def vgg16_layer(img, layer='block2_pool'):
     # Extracting features from the VGG16 layer
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
-    print(model_layer.input)
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
