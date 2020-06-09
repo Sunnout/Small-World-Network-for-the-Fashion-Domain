@@ -42,7 +42,8 @@ def vgg16_layer(img, layer='block2_pool'):
       layer (layer). """
 
     tf.keras.backend.clear_session()
-
+    print("VGG16 is processing a new image!")
+    
     # Extracting features from the VGG16 layer
     model = VGG16(weights='imagenet', include_top=True)
     model_layer = Model(inputs=model.input, outputs=model.get_layer(layer).output)
